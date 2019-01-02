@@ -1,0 +1,21 @@
+{
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:recommended"
+    ],
+    "jsRules": {},
+    "rules": {
+        "ordered-imports": false,
+        "object-literal-sort-keys": false,
+        //"member-ordering": false,
+        "member-access": false,
+        "no-unused-variable": true,
+        "max-line-length": false,
+        "interface-over-type-literal": false,
+        "no-reference": false
+    },
+    "linterOptions": {
+        "exclude": ["node_modules/**/*"]
+    },
+    "rulesDirectory": []
+}

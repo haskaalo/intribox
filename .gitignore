@@ -1,0 +1,13 @@
+bin
+*.exe
+
+node_modules/
+dist/
+*.log
+
+.vscode
+debug
+
+# intribox specific files
+data/
+intribox_config.ini
