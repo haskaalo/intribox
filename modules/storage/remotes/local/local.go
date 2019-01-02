@@ -31,11 +31,11 @@ func (R) WriteFile(filename string, inFolder string, rdata io.Reader) (*remotes.
 	if err != nil {
 		return nil, err
 	}
-	defer osfile.Close()
 
 	// Copy song to tempfile
 	analyzer := bodyanalyzer.New(sha256.New(), true)
 	_, err = io.Copy(osfile, io.TeeReader(rdata, analyzer))
+	osfile.Close()
 	if err != nil {
 		os.Remove(osfile.Name())
 		return nil, err
@@ -53,7 +53,6 @@ func (R) WriteFile(filename string, inFolder string, rdata io.Reader) (*remotes.
 		return nil, err
 	}
 
-	osfile.Close()
 	err = os.Rename(osfile.Name(), systemPathDirectory)
 	if err != nil {
 		os.Remove(osfile.Name())
