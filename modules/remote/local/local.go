@@ -8,10 +8,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/haskaalo/intribox/modules/storage/remotes"
-
 	"github.com/haskaalo/intribox/config"
 	"github.com/haskaalo/intribox/modules/bodyanalyzer"
+	"github.com/haskaalo/intribox/modules/remote"
 )
 
 // R local
@@ -19,7 +18,7 @@ type R struct{}
 
 // WriteFile to local and return useful data
 // inFolder can be for example: /{:userid}/songs
-func (R) WriteFile(filename string, inFolder string, rdata io.Reader) (*remotes.ObjectInfo, error) {
+func (R) WriteFile(filename string, inFolder string, rdata io.Reader) (*remote.ObjectInfo, error) {
 	err := os.MkdirAll(config.Storage.UserDataPath+"/tmp", 0777)
 	if err != nil {
 		return nil, err
@@ -59,7 +58,7 @@ func (R) WriteFile(filename string, inFolder string, rdata io.Reader) (*remotes.
 		return nil, err
 	}
 
-	return &remotes.ObjectInfo{
+	return &remote.ObjectInfo{
 		Path:   filepath.ToSlash(pathDirectory),
 		Size:   analyzer.Size(),
 		SHA256: fileHash,

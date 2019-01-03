@@ -1,14 +1,15 @@
 package storage
 
 import (
-	"github.com/haskaalo/intribox/config"
-	"github.com/haskaalo/intribox/modules/storage/remotes"
-	"github.com/haskaalo/intribox/modules/storage/remotes/local"
 	"github.com/rs/zerolog/log"
+
+	"github.com/haskaalo/intribox/config"
+	"github.com/haskaalo/intribox/modules/remote"
+	"github.com/haskaalo/intribox/modules/remote/local"
 )
 
 // CurrentRemote Remote specified in config
-var CurrentRemote remotes.Remote
+var CurrentRemote remote.Remote
 
 func init() {
 	switch config.Storage.RemoteName {

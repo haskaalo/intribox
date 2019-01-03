@@ -2,7 +2,7 @@ package config
 
 import (
 	"os"
-	"strings"
+	"path/filepath"
 
 	"github.com/go-ini/ini"
 	"github.com/rs/zerolog"
@@ -91,11 +91,6 @@ func init() {
 
 	Client.AssetsPath = cfg.Section("Client").Key("assetspath").MustString(dir + "/client/dist")
 
-	Storage.UserDataPath = cfg.Section("Storage").Key("userdatapath").MustString(dir + "/data")
-	if strings.HasSuffix(Storage.UserDataPath, "/") {
-		sz := len(Storage.UserDataPath)
-		Storage.UserDataPath = Storage.UserDataPath[:sz-1]
-	}
-
+	Storage.UserDataPath = cfg.Section("Storage").Key("userdatapath").MustString(filepath.Join(dir, "/data"))
 	Storage.RemoteName = cfg.Section("Storage").Key("remotename").MustString("local")
 }
