@@ -1,7 +1,6 @@
 package models
 
 import (
-	"database/sql"
 	"fmt"
 
 	"github.com/go-redis/redis"
@@ -15,13 +14,6 @@ var (
 	r  *redis.Client
 	db *sqlx.DB
 )
-
-// Querier sql.DB but usable for transactions
-type Querier interface {
-	Select(dest interface{}, query string, args ...interface{}) error
-	Get(dest interface{}, query string, args ...interface{}) error
-	NamedExec(query string, arg interface{}) (sql.Result, error)
-}
 
 func init() {
 	initiateDatabase()

@@ -2,6 +2,8 @@ package models
 
 import (
 	"time"
+
+	"github.com/jmoiron/sqlx"
 )
 
 // User SQL table users
@@ -19,9 +21,9 @@ func GetUserByEmail(email string) (*User, error) {
 	return getUserByEmail(db, email)
 }
 
-func getUserByEmail(q Querier, email string) (*User, error) {
+func getUserByEmail(q sqlx.Ext, email string) (*User, error) {
 	user := &User{}
-	err := q.Get(user, "SELECT * FROM users WHERE email = $1", email)
+	err := sqlx.Get(q, user, "SELECT * FROM users WHERE email = $1", email)
 
 	return user, err
 }
@@ -31,8 +33,8 @@ func (u *User) InsertNewUser() error {
 	return u.insertNewUser(db)
 }
 
-func (u *User) insertNewUser(q Querier) error {
-	_, err := q.NamedExec("INSERT INTO users (email, password) VALUES (:email, :password)",
+func (u *User) insertNewUser(q sqlx.Ext) error {
+	_, err := sqlx.NamedExec(q, "INSERT INTO users (email, password) VALUES (:email, :password)",
 		map[string]interface{}{
 			"email":    u.Email,
 			"password": u.Password,

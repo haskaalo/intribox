@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/jmoiron/sqlx"
+)
 
 // Song SQL Table song
 type Song struct {
@@ -16,17 +20,15 @@ type Song struct {
 const SongDirPrefix = "%o/song"
 
 // InsertNewSong Insert a new song
-func (u *Song) InsertNewSong() error {
-	return u.insertNewSong(db)
+func (s *Song) InsertNewSong() (songid int, err error) {
+	return s.insertNewSong(db)
 }
 
-func (u *Song) insertNewSong(q Querier) error {
-	_, err := q.NamedExec("INSERT INTO song (ownerid, filehash, filepath, size) VALUES (:ownerid, :filehash, :filepath, :size)",
-		map[string]interface{}{
-			"ownerid":  u.OwnerID,
-			"filehash": u.FileHash,
-			"filepath": u.FilePath,
-			"size":     u.Size,
-		})
-	return err
+func (s *Song) insertNewSong(q sqlx.Ext) (int, error) {
+	var id int
+	query := `INSERT INTO song (ownerid, filehash, filepath, size) VALUES ($1, $2, $3, $4) RETURNING id`
+
+	err := sqlx.Get(q, &id, query, s.OwnerID, s.FileHash, s.FilePath, s.Size)
+
+	return id, err
 }

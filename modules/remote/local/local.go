@@ -2,6 +2,7 @@ package local
 
 import (
 	"crypto/sha256"
+	"encoding/hex"
 	"io"
 	"io/ioutil"
 	"os"
@@ -9,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/haskaalo/intribox/config"
-	"github.com/haskaalo/intribox/modules/bodyanalyzer"
 	"github.com/haskaalo/intribox/modules/remote"
 )
 
@@ -32,8 +32,8 @@ func (R) WriteFile(filename string, inFolder string, rdata io.Reader) (*remote.O
 	}
 
 	// Copy song to tempfile
-	analyzer := bodyanalyzer.New(sha256.New(), true)
-	_, err = io.Copy(osfile, io.TeeReader(rdata, analyzer))
+	hasher := sha256.New()
+	size, err := io.Copy(osfile, io.TeeReader(rdata, hasher))
 	osfile.Close()
 	if err != nil {
 		os.Remove(osfile.Name())
@@ -41,7 +41,7 @@ func (R) WriteFile(filename string, inFolder string, rdata io.Reader) (*remote.O
 	}
 
 	// Move the file from tmp to the actual dest with the actual name
-	fileHash := analyzer.HexHash()
+	fileHash := hex.EncodeToString(hasher.Sum(nil))
 
 	pathDirectory := filepath.Join(inFolder, fileHash[0:2], fileHash[2:4], fileHash+filepath.Ext(filename)) // Path to return in ObjectInfo
 	systemPathDirectory := filepath.Join(config.Storage.UserDataPath, pathDirectory)
@@ -60,7 +60,7 @@ func (R) WriteFile(filename string, inFolder string, rdata io.Reader) (*remote.O
 
 	return &remote.ObjectInfo{
 		Path:   filepath.ToSlash(pathDirectory),
-		Size:   analyzer.Size(),
+		Size:   size,
 		SHA256: fileHash,
 	}, nil
 }

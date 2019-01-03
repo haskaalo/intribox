@@ -45,7 +45,7 @@ func postNew(w http.ResponseWriter, r *http.Request) {
 		Size:     object.Size,
 	}
 
-	err = song.InsertNewSong()
+	songid, err := song.InsertNewSong()
 	if err != nil {
 		response.InternalError(w)
 		log.Error().Err(err).Msg("Error while inserting song info to database")
@@ -54,6 +54,6 @@ func postNew(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.Respond(w, &response.M{
-		"ok": 1,
+		"id": songid,
 	}, 200) // replace with song id and more
 }
