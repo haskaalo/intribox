@@ -9,6 +9,7 @@ import (
 // Song SQL Table song
 type Song struct {
 	ID       string    `json:"id" db:"id"`
+	Name     string    `json:"name" db:"name"`
 	OwnerID  int       `json:"ownerid" db:"ownerid"`
 	UploadAt time.Time `json:"uploadat" db:"uploadat"`
 	FileHash string    `json:"filehash" db:"filehash"`
@@ -26,9 +27,8 @@ func (s *Song) InsertNewSong() (songid int, err error) {
 
 func (s *Song) insertNewSong(q sqlx.Ext) (int, error) {
 	var id int
-	query := `INSERT INTO song (ownerid, filehash, filepath, size) VALUES ($1, $2, $3, $4) RETURNING id`
+	query := `INSERT INTO song (name, ownerid, filehash, filepath, size) VALUES ($1, $2, $3, $4, $5) RETURNING id`
+	err := sqlx.Get(q, &id, query, s.Name, s.OwnerID, s.FileHash, s.FilePath, s.Size)
 
-	err := sqlx.Get(q, &id, query, s.OwnerID, s.FileHash, s.FilePath, s.Size)
-
-	return id, err
+	return id, knownDatabaseError(err)
 }

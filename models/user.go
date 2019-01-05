@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/jmoiron/sqlx"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // User SQL table users
@@ -24,8 +25,11 @@ func GetUserByEmail(email string) (*User, error) {
 func getUserByEmail(q sqlx.Ext, email string) (*User, error) {
 	user := &User{}
 	err := sqlx.Get(q, user, "SELECT * FROM users WHERE email = $1", email)
+	if err != nil {
+		return nil, knownDatabaseError(err)
+	}
 
-	return user, err
+	return user, nil
 }
 
 // InsertNewUser Insert a new user
@@ -39,7 +43,25 @@ func (u *User) insertNewUser(q sqlx.Ext) error {
 			"email":    u.Email,
 			"password": u.Password,
 		})
-	return err
+
+	return knownDatabaseError(err)
+}
+
+// LogInUser Return user data if password and email match
+func LogInUser(email string, password string) (*User, error) {
+	user, err := GetUserByEmail(email)
+	if err != nil {
+		return nil, knownDatabaseError(err)
+	}
+
+	err = bcrypt.CompareHashAndPassword(user.Password, []byte(password))
+	if err == bcrypt.ErrMismatchedHashAndPassword {
+		return nil, ErrRecordNotFound
+	} else if err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }
 
 // DeleteAllUsers Delete all users in table user

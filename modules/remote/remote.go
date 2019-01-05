@@ -12,5 +12,6 @@ type ObjectInfo struct {
 // Remote File storage system
 type Remote interface {
 	WriteFile(filename string, inFolder string, rdata io.Reader) (*ObjectInfo, error)
+	RemoveFile(path string) error
 	ReadFile(path string) (io.Reader, error)
 }

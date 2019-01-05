@@ -8,14 +8,14 @@ import (
 	"testing"
 
 	"github.com/haskaalo/intribox/models"
-	"github.com/haskaalo/intribox/modules/context"
 	"github.com/haskaalo/intribox/modules/hash"
 	"github.com/haskaalo/intribox/modules/test"
+	"github.com/haskaalo/intribox/request"
 	"github.com/stretchr/testify/assert"
 )
 
 func echoSessionData(w http.ResponseWriter, r *http.Request) {
-	data := context.GetSession(r)
+	data := request.GetSession(r)
 	fmt.Fprintf(w, data.Selector+"|"+data.Validator+"|"+strconv.Itoa(data.UserID))
 }
 

@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/haskaalo/intribox/models"
-	"github.com/haskaalo/intribox/modules/context"
+	"github.com/haskaalo/intribox/request"
 	"github.com/haskaalo/intribox/response"
 )
 
@@ -26,7 +26,7 @@ func SetSession(next http.Handler) http.Handler {
 			return
 		}
 
-		context.SetSession(r, session)
+		request.SetSession(session, r)
 		err = session.ResetTimeSession()
 		if err != nil {
 			response.InternalError(rw)

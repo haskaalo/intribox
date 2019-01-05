@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/haskaalo/intribox/config"
 	"github.com/haskaalo/intribox/modules/remote"
@@ -18,7 +17,7 @@ type R struct{}
 
 // WriteFile to local and return useful data
 // inFolder can be for example: /{:userid}/songs
-func (R) WriteFile(filename string, inFolder string, rdata io.Reader) (*remote.ObjectInfo, error) {
+func (r R) WriteFile(filename string, inFolder string, rdata io.Reader) (*remote.ObjectInfo, error) {
 	err := os.MkdirAll(config.Storage.UserDataPath+"/tmp", 0777)
 	if err != nil {
 		return nil, err
@@ -65,22 +64,12 @@ func (R) WriteFile(filename string, inFolder string, rdata io.Reader) (*remote.O
 	}, nil
 }
 
-// ReadFile from local
-func (R) ReadFile(name string) (io.Reader, error) {
-	return nil, nil
+// RemoveFile from local
+func (r R) RemoveFile(path string) error {
+	return os.Remove(filepath.Join(config.Storage.UserDataPath, path))
 }
 
-func parseName(name string) (directory string, filename string) {
-	subString := strings.Split(name, "/")
-
-	for idx, dirpath := range subString {
-		if idx == len(subString)-1 {
-			filename = dirpath
-			break
-		}
-
-		directory += "/" + dirpath
-	}
-
-	return
+// ReadFile from local
+func (r R) ReadFile(name string) (io.Reader, error) {
+	return nil, nil
 }

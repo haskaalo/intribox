@@ -1,15 +1,12 @@
 package auth
 
 import (
-	"database/sql"
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
-
-	"golang.org/x/crypto/bcrypt"
 
 	"github.com/haskaalo/intribox/models"
 	"github.com/haskaalo/intribox/response"
+	"github.com/rs/zerolog/log"
 )
 
 type loginParams struct {
@@ -18,34 +15,20 @@ type loginParams struct {
 }
 
 func postLogin(w http.ResponseWriter, r *http.Request) {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		response.InternalError(w)
-		return
-	}
-
 	params := new(loginParams)
-	err = json.Unmarshal(body, params)
+	err := json.NewDecoder(r.Body).Decode(params)
 	if err != nil {
-		// Probably change depending on the error.
-		response.InternalError(w)
-		return
-	}
-	user, err := models.GetUserByEmail(params.Email)
-
-	if err == sql.ErrNoRows {
-		response.NotFound(w)
-		return
-	} else if err != nil {
-		response.InternalError(w)
+		log.Warn().Err(err).Msg("Error while trying to decode request body JSON")
+		response.InternalError(w) // Probably change depending on the error.
 		return
 	}
 
-	err = bcrypt.CompareHashAndPassword(user.Password, []byte(params.Password))
-	if err == bcrypt.ErrMismatchedHashAndPassword {
+	user, err := models.LogInUser(params.Email, params.Password)
+	if err == models.ErrRecordNotFound {
 		response.NotFound(w)
 		return
 	} else if err != nil {
+		log.Error().Err(err).Msg("Error while trying to login user")
 		response.InternalError(w)
 		return
 	}

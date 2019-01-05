@@ -26,9 +26,9 @@ func TestPostLogin(t *testing.T) {
 	test.Router.HandleFunc("/login", postLogin).Methods("POST")
 
 	t.Run("Should authenticate user with correct password", func(t *testing.T) {
-		jsonLoginParams, err := json.Marshal(&response.M{
-			"email":    user.Email,
-			"password": test.TestUserPassword,
+		jsonLoginParams, err := json.Marshal(&loginParams{
+			Email:    user.Email,
+			Password: test.TestUserPassword,
 		})
 		assert.NoError(t, err)
 
@@ -48,9 +48,9 @@ func TestPostLogin(t *testing.T) {
 	})
 
 	t.Run("Should not authenticate user with incorrect password", func(t *testing.T) {
-		jsonLoginParams, err := json.Marshal(&response.M{
-			"email":    user.Email,
-			"password": []byte("obviously not the correct password"),
+		jsonLoginParams, err := json.Marshal(&loginParams{
+			Email:    user.Email,
+			Password: "obviously not the correct password",
 		})
 		assert.NoError(t, err)
 

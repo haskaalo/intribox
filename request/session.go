@@ -1,4 +1,4 @@
-package context
+package request
 
 import (
 	"net/http"
@@ -11,14 +11,21 @@ const privKeySession = 0
 
 // GetSession get session data
 func GetSession(r *http.Request) *models.Session {
-	sess := &models.Session{}
-	if rv := context.Get(r, privKeySession); rv != nil {
-		sess = rv.(*models.Session)
+	rv := context.Get(r, privKeySession)
+	if rv == nil {
+		return nil
 	}
+
+	sess := new(models.Session)
+	sess, ok := rv.(*models.Session)
+	if !ok {
+		return nil
+	}
+
 	return sess
 }
 
 // SetSession Set session data on variable
-func SetSession(r *http.Request, sess *models.Session) {
+func SetSession(sess *models.Session, r *http.Request) {
 	context.Set(r, privKeySession, sess)
 }

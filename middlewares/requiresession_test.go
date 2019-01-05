@@ -7,15 +7,14 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	"github.com/haskaalo/intribox/models"
-	"github.com/haskaalo/intribox/modules/context"
 	"github.com/haskaalo/intribox/modules/test"
+	"github.com/haskaalo/intribox/request"
+	"github.com/stretchr/testify/assert"
 )
 
 func echoUser(w http.ResponseWriter, r *http.Request) {
-	data := context.GetSession(r)
+	data := request.GetSession(r)
 	fmt.Fprintf(w, strconv.Itoa(data.UserID))
 }
 
