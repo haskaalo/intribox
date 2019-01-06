@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -10,15 +11,12 @@ import (
 type Song struct {
 	ID       string    `json:"id" db:"id"`
 	Name     string    `json:"name" db:"name"`
+	Ext      string    `json:"ext" db:"ext"`
 	OwnerID  int       `json:"ownerid" db:"ownerid"`
 	UploadAt time.Time `json:"uploadat" db:"uploadat"`
 	FileHash string    `json:"filehash" db:"filehash"`
-	FilePath string    `json:"filepath" db:"filepath"`
 	Size     int64     `json:"size" db:"size"`
 }
-
-// SongDirPrefix used in storage %s represent userID
-const SongDirPrefix = "%o/song"
 
 // InsertNewSong Insert a new song
 func (s *Song) InsertNewSong() (songid int, err error) {
@@ -27,8 +25,26 @@ func (s *Song) InsertNewSong() (songid int, err error) {
 
 func (s *Song) insertNewSong(q sqlx.Ext) (int, error) {
 	var id int
-	query := `INSERT INTO song (name, ownerid, filehash, filepath, size) VALUES ($1, $2, $3, $4, $5) RETURNING id`
-	err := sqlx.Get(q, &id, query, s.Name, s.OwnerID, s.FileHash, s.FilePath, s.Size)
+	query := `INSERT INTO song (name, ext, ownerid, filehash, size) VALUES ($1, $2, $3, $4, $5) RETURNING id`
+	err := sqlx.Get(q, &id, query, s.Name, s.Ext, s.OwnerID, s.FileHash, s.Size)
 
 	return id, knownDatabaseError(err)
+}
+
+// SongHashExist Does Song with following hash and ownerid exist
+func SongHashExist(ownerid int, hash string) (bool, error) {
+	return songHashExist(db, ownerid, hash)
+}
+
+func songHashExist(q sqlx.Ext, ownerid int, hash string) (bool, error) {
+	var exist bool
+	query := `SELECT EXISTS (SELECT 1 FROM song WHERE ownerid=$1 AND filehash=$2)`
+	err := sqlx.Get(q, &exist, query, ownerid, hash)
+
+	return exist, knownDatabaseError(err)
+}
+
+// GetSongPath Get song path based on ownerid and hash
+func (s *Song) GetSongPath() string {
+	return fmt.Sprintf("%o/song/%s.%s", s.OwnerID, s.FileHash, s.Ext)
 }

@@ -14,7 +14,7 @@ var CurrentRemote remote.Remote
 func init() {
 	switch config.Storage.RemoteName {
 	case "local":
-		CurrentRemote = local.R{}
+		CurrentRemote = &local.R{}
 	default:
 		log.Fatal().Str("remote", config.Storage.RemoteName).Msg("Invalid Remote Name in config")
 	}

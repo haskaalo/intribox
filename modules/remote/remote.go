@@ -2,16 +2,30 @@ package remote
 
 import "io"
 
-// ObjectInfo File infernation output
-type ObjectInfo struct {
-	Path   string
-	Size   int64
-	SHA256 string
-}
-
 // Remote File storage system
 type Remote interface {
-	WriteFile(filename string, inFolder string, rdata io.Reader) (*ObjectInfo, error)
+	// NewObjectWriter prepare file to be uploaded to a remote
+	NewObjectWriter(in io.Reader) (ObjectWriter, error)
+
 	RemoveFile(path string) error
+
 	ReadFile(path string) (io.Reader, error)
+}
+
+// ObjectWriter Upload prepared (tmp) file to remote
+type ObjectWriter interface {
+	ObjectInfo
+
+	// Move file from tmp to local directory
+	Move(path string) error
+
+	// Cancel file write by removing tmp file
+	Cancel()
+}
+
+// ObjectInfo object related info
+type ObjectInfo interface {
+	SHA256() string
+
+	Size() int64
 }

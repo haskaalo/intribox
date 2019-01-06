@@ -12,10 +12,10 @@ CREATE TABLE users (
 CREATE TABLE song (
 	id SERIAL NOT NULL,
 	name varchar(255) NOT NULL,
+	ext TEXT NOT NULL,
 	ownerid INT REFERENCES users(id) ON DELETE CASCADE,
 	uploadat DATE NOT NULL DEFAULT NOW(),
-	filehash varchar(64) NOT NULL,
-	filepath TEXT NOT NULL,
+	filehash citext NOT NULL,
 	size BIGINT NOT NULL,
-	PRIMARY KEY (id)
+	PRIMARY KEY (id, filehash)
 );

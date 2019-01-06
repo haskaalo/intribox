@@ -1,7 +1,6 @@
 package song
 
 import (
-	"fmt"
 	"net/http"
 	"path/filepath"
 	"strings"
@@ -31,26 +30,45 @@ func postNew(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	object, err := storage.CurrentRemote.WriteFile(songName, fmt.Sprintf(models.SongDirPrefix, session.UserID), r.Body)
+	objectWriter, err := storage.CurrentRemote.NewObjectWriter(r.Body)
 	if err != nil {
-		log.Error().Err(err).Msg("Error while writing file to remote")
+		log.Error().Err(err).Msg("Error while writing preparing object writer")
 		response.InternalError(w)
 		return
 	}
 
 	song := &models.Song{
 		Name:     fileNameNoExt(songName),
+		Ext:      filepath.Ext(songName)[1:],
 		OwnerID:  session.UserID,
-		FileHash: object.SHA256,
-		FilePath: object.Path,
-		Size:     object.Size,
+		FileHash: objectWriter.SHA256(),
+		Size:     objectWriter.Size(),
 	}
+
+	exist, err := models.SongHashExist(session.UserID, song.FileHash)
+	if err != nil {
+		log.Error().Err(err).Msg("Error while querying database")
+		response.InternalError(w)
+		return
+	} else if exist == true {
+		objectWriter.Cancel()
+		response.InternalError(w) // Change response
+		return
+	}
+
+	err = objectWriter.Move(song.GetSongPath())
+	if err != nil {
+		log.Error().Err(err).Msg("Error while moving file to remote")
+		response.InternalError(w)
+		return
+	}
+
 	songid, err := song.InsertNewSong()
 	if err != nil {
 		log.Error().Err(err).Msg("Error while inserting song info to database")
 		response.InternalError(w)
 
-		err = storage.CurrentRemote.RemoveFile(song.FilePath)
+		err = storage.CurrentRemote.RemoveFile(song.GetSongPath())
 		if err != nil {
 			log.Error().Err(err).Msg("Error while removing song info to database after having error with database")
 		}
