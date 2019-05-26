@@ -42,3 +42,11 @@ func Unauthorized(w http.ResponseWriter) {
 		Message: "Unauthorized",
 	}, http.StatusUnauthorized)
 }
+
+// Conflict Respond with a status of 409 and a message "Conflict"
+func Conflict(w http.ResponseWriter) {
+	Respond(w, &basicError{
+		Status:  409,
+		Message: "Conflict: Resource already exist",
+	}, http.StatusConflict)
+}

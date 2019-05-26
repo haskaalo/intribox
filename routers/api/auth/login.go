@@ -18,7 +18,6 @@ func postLogin(w http.ResponseWriter, r *http.Request) {
 	params := new(loginParams)
 	err := json.NewDecoder(r.Body).Decode(params)
 	if err != nil {
-		log.Warn().Err(err).Msg("Error while trying to decode request body JSON")
 		response.InternalError(w) // Probably change depending on the error.
 		return
 	}
@@ -28,13 +27,14 @@ func postLogin(w http.ResponseWriter, r *http.Request) {
 		response.NotFound(w)
 		return
 	} else if err != nil {
-		log.Error().Err(err).Msg("Error while trying to login user")
+		log.Warn().Err(err).Msg("Error while trying to login user")
 		response.InternalError(w)
 		return
 	}
 
 	selector, validator, err := models.InitiateSession(user.ID)
 	if err != nil {
+		log.Warn().Err(err).Msg("Error while trying to initiate session")
 		response.InternalError(w)
 		return
 	}

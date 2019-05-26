@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/haskaalo/intribox/config"
-	"github.com/haskaalo/intribox/modules/remote"
+	"github.com/haskaalo/intribox/storage/backend"
 )
 
 type localWriter struct {
@@ -19,7 +19,9 @@ type localWriter struct {
 }
 
 // NewObjectWriter prepare file to be uploaded to local
-func (r *R) NewObjectWriter(in io.Reader) (remote.ObjectWriter, error) {
+func (*R) NewObjectWriter(in io.Reader) (backend.ObjectWriter, error) {
+	writer := new(localWriter)
+
 	err := os.MkdirAll(config.Storage.UserDataPath+"/tmp", 0777)
 	if err != nil {
 		return nil, err
@@ -38,13 +40,11 @@ func (r *R) NewObjectWriter(in io.Reader) (remote.ObjectWriter, error) {
 		return nil, err
 	}
 
-	oWriter := &localWriter{
-		tmpfile: osfile,
-		sha256:  hex.EncodeToString(hasher.Sum(nil)),
-		size:    size,
-	}
+	writer.tmpfile = osfile
+	writer.sha256 = hex.EncodeToString(hasher.Sum(nil))
+	writer.size = size
 
-	return oWriter, nil
+	return writer, nil
 }
 
 func (w *localWriter) Move(path string) error {
@@ -68,10 +68,10 @@ func (w *localWriter) Cancel() {
 	os.Remove(w.tmpfile.Name())
 }
 
-func (w *localWriter) SHA256() string {
+func (w localWriter) SHA256() string {
 	return w.sha256
 }
 
-func (w *localWriter) Size() int64 {
+func (w localWriter) Size() int64 {
 	return w.size
 }

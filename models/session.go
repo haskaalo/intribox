@@ -70,14 +70,14 @@ func GetSessionBySelector(selector string) (*Session, error) {
 func GetSessionByToken(token string) (*Session, error) {
 	parsedToken, err := ParseToken(token)
 	if err != nil {
-		return &Session{}, err
+		return nil, err
 	}
 
 	session, err := GetSessionBySelector(parsedToken.Selector)
 	if err == redis.Nil {
-		return &Session{}, ErrNotValidSessionToken
+		return nil, ErrNotValidSessionToken
 	} else if err != nil {
-		return &Session{}, err
+		return nil, err
 	}
 
 	hashedValidator := hash.SHA1([]byte(parsedToken.Validator))
@@ -85,7 +85,7 @@ func GetSessionByToken(token string) (*Session, error) {
 		return session, nil
 	}
 
-	return &Session{}, ErrNotValidSessionToken
+	return nil, ErrNotValidSessionToken
 }
 
 // DeleteSessionBySelector Delete a session by using a selector

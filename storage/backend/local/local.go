@@ -8,15 +8,15 @@ import (
 	"github.com/haskaalo/intribox/config"
 )
 
-// R local
+// R exported local backend
 type R struct{}
 
 // RemoveFile from local
-func (r R) RemoveFile(path string) error {
+func (*R) RemoveFile(path string) error {
 	return os.Remove(filepath.Join(config.Storage.UserDataPath, path))
 }
 
 // ReadFile from local
-func (r R) ReadFile(name string) (io.Reader, error) {
+func (*R) ReadFile(name string) (io.Reader, error) {
 	return nil, nil
 }

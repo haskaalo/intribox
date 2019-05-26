@@ -44,6 +44,19 @@ func songHashExist(q sqlx.Ext, ownerid int, hash string) (bool, error) {
 	return exist, knownDatabaseError(err)
 }
 
+// GetSongByID Select a song with a ID
+func GetSongByID(songid int) (*Song, error) {
+	return getSongByID(db, songid)
+}
+
+func getSongByID(q sqlx.Ext, songid int) (*Song, error) {
+	song := &Song{}
+	query := `SELECT * FROM song WHERE id=$1`
+	err := sqlx.Get(q, song, query, songid)
+
+	return song, knownDatabaseError(err)
+}
+
 // GetSongPath Get song path based on ownerid and hash
 func (s *Song) GetSongPath() string {
 	return fmt.Sprintf("%o/song/%s.%s", s.OwnerID, s.FileHash, s.Ext)

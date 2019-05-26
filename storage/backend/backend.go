@@ -1,10 +1,10 @@
-package remote
+package backend
 
 import "io"
 
-// Remote File storage system
-type Remote interface {
-	// NewObjectWriter prepare file to be uploaded to a remote
+// Backend interface used by all storage system
+type Backend interface {
+	// NewObjectWriter prepare file to be uploaded to a storage system
 	NewObjectWriter(in io.Reader) (ObjectWriter, error)
 
 	RemoveFile(path string) error
@@ -12,7 +12,7 @@ type Remote interface {
 	ReadFile(path string) (io.Reader, error)
 }
 
-// ObjectWriter Upload prepared (tmp) file to remote
+// ObjectWriter Upload prepared (tmp) file to storage
 type ObjectWriter interface {
 	ObjectInfo
 

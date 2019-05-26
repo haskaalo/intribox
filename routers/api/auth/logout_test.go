@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestAuthLogout(t *testing.T) {
+func TestPostLogout(t *testing.T) {
 	test.MockServerSetup()
 	defer test.MockServerTearDown()
 

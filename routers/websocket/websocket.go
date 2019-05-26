@@ -58,7 +58,7 @@ func ServeWs(w http.ResponseWriter, r *http.Request) {
 		conn.Close()
 		return
 	} else if err != nil {
-		log.Error().AnErr("error", err).Msg("Failed to GetSessionByToken")
+		log.Warn().Err(err).Msg("Failed to GetSessionByToken")
 		conn.WriteControl(ws.CloseMessage, CloseUnknownError, time.Now().Add(writeWait))
 		conn.Close()
 		return
