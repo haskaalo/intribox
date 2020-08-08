@@ -11,7 +11,7 @@ services:
     environment:
       - POSTGRES_USER=intribox
       - POSTGRES_DB=intribox
-      - POSTGRES_DATABASE=totalrandompassword
+      - POSTGRES_PASSWORD=totalrandompassword
   postgres_migration:
     container_name: postgres_migration
     image: migrate/migrate
