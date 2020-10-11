@@ -11,3 +11,6 @@ debug
 # intribox specific files
 data/
 intribox_config.ini
+
+#localstack for testing s3
+.localstack/

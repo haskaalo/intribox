@@ -14,7 +14,7 @@ services:
       - POSTGRES_PASSWORD=totalrandompassword
   postgres_migration:
     container_name: postgres_migration
-    image: migrate/migrate
+    image: migrate/migrate:latest
     restart: on-failure
     networks:
       - app-network
@@ -28,7 +28,16 @@ services:
     image: redis:alpine
     ports:
       - 6379:6379
-
+  localstack: # for s3 testing
+    container_name: localstack_dev
+    image: localstack/localstack:latest
+    ports:
+      - 4563-4599:4563-4599
+      - 8081:8081
+    environment: 
+      - SERVICES=s3
+    volumes:
+      - './.localstack:/tmp/localstack'
 networks:
   app-network:
     driver: bridge
