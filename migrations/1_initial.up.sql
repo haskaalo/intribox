@@ -11,6 +11,7 @@ CREATE TABLE users (
 
 CREATE TABLE song (
 	id SERIAL NOT NULL,
+	objectid varchar(36) UNIQUE NOT NULL CHECK (char_length(objectid) = 36),
 	name varchar(255) NOT NULL,
 	ext TEXT NOT NULL,
 	ownerid INT REFERENCES users(id) ON DELETE CASCADE,

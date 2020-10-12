@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/google/uuid"
 	"github.com/haskaalo/intribox/config"
 	"github.com/haskaalo/intribox/models"
 	"github.com/haskaalo/intribox/request"
@@ -36,45 +37,40 @@ func postNew(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	objectWriter, err := storage.Remote.NewObjectWriter(r.Body)
+	song := &models.Song{
+		Name:     fileNameNoExt(songName),
+		ObjectID: uuid.New().String(),
+		Ext:      filepath.Ext(songName)[1:],
+		OwnerID:  session.UserID,
+	}
+
+	objectWriter, err := storage.Remote.WriteObject(r.Body, song.GetSongPath())
 	if err != nil {
 		log.Warn().Err(err).Msg("Error while creating object writer")
 		response.InternalError(w)
 		return
 	}
 
-	song := &models.Song{
-		Name:     fileNameNoExt(songName),
-		Ext:      filepath.Ext(songName)[1:],
-		OwnerID:  session.UserID,
-		FileHash: objectWriter.SHA256(),
-		Size:     objectWriter.Size(),
-	}
-
 	exist, err := models.SongHashExist(session.UserID, song.FileHash)
 	if err != nil {
 		log.Warn().Err(err).Msg("Error while querying database")
-		objectWriter.Cancel()
+		objectWriter.Delete()
 		response.InternalError(w)
 		return
 	} else if exist == true {
-		objectWriter.Cancel()
+		objectWriter.Delete()
 		response.Conflict(w)
 		return
 	}
 
-	err = objectWriter.Move(song.GetSongPath())
-	if err != nil {
-		log.Warn().Err(err).Msg("Error while moving file to remote")
-		objectWriter.Cancel()
-		return
-	}
+	song.FileHash = objectWriter.SHA256()
+	song.Size = objectWriter.Size()
 
 	songid, err := song.InsertNewSong()
 	if err != nil {
 		response.InternalError(w)
 
-		err = storage.Remote.RemoveFile(song.GetSongPath())
+		err = objectWriter.Delete()
 		if err != nil {
 			log.Error().Err(err).Str("path", song.GetSongPath()).Msg("Cannot remove file from remote after error from writing to database")
 		}

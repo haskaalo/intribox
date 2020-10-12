@@ -4,7 +4,6 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -18,15 +17,17 @@ type localWriter struct {
 	size    int64
 }
 
-// NewObjectWriter prepare file to be uploaded to local
-func (*R) NewObjectWriter(in io.Reader) (backend.ObjectWriter, error) {
+// WriteObject prepare file to be uploaded to local
+func (*R) WriteObject(in io.Reader, path string) (backend.ObjectAction, error) {
 	writer := new(localWriter)
+	fullPath := config.Storage.UserDataPath + "/" + path
 
-	err := os.MkdirAll(config.Storage.UserDataPath+"/tmp", 0777)
+	err := os.MkdirAll(filepath.Dir(fullPath), 0777)
 	if err != nil {
 		return nil, err
 	}
-	osfile, err := ioutil.TempFile(config.Storage.UserDataPath+"/tmp", "intribox_")
+
+	osfile, err := os.Create(fullPath)
 	if err != nil {
 		return nil, err
 	}
@@ -47,25 +48,8 @@ func (*R) NewObjectWriter(in io.Reader) (backend.ObjectWriter, error) {
 	return writer, nil
 }
 
-func (w *localWriter) Move(path string) error {
-	systemPath := filepath.Join(config.Storage.UserDataPath, filepath.Dir(path), filepath.Base(path))
-	err := os.MkdirAll(filepath.Dir(systemPath), 0777)
-	if err != nil {
-		os.Remove(w.tmpfile.Name())
-		return err
-	}
-
-	err = os.Rename(w.tmpfile.Name(), systemPath)
-	if err != nil {
-		os.Remove(w.tmpfile.Name())
-		return err
-	}
-
-	return nil
-}
-
-func (w *localWriter) Cancel() {
-	os.Remove(w.tmpfile.Name())
+func (w *localWriter) Delete() error {
+	return os.Remove(w.tmpfile.Name())
 }
 
 func (w localWriter) SHA256() string {

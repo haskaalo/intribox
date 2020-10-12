@@ -4,6 +4,9 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/go-ini/ini"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -43,6 +46,16 @@ var (
 		UserDataPath string
 		RemoteName   string
 	}
+
+	Aws struct {
+		Endpoint  string
+		Bucket    string
+		Region    string
+		AccessKey string
+		SecretKey string
+	}
+
+	AwsSession *session.Session
 )
 
 var (
@@ -93,4 +106,18 @@ func init() {
 
 	Storage.UserDataPath = cfg.Section("Storage").Key("userdatapath").MustString(filepath.Join(dir, "/data"))
 	Storage.RemoteName = cfg.Section("Storage").Key("remotename").MustString("local")
+
+	Aws.Endpoint = cfg.Section("S3").Key("endpoint").MustString("127.0.0.1:4566") // Default value equal to the localstack test server
+	Aws.Bucket = cfg.Section("S3").Key("bucket").MustString("testbucket")         // Default value equal to the localstack test server
+	Aws.Region = cfg.Section("S3").Key("region").MustString("us-east1")
+	Aws.AccessKey = cfg.Section("S3").Key("accesskey").MustString("")
+	Aws.SecretKey = cfg.Section("S3").Key("secretkey").MustString("")
+	AwsSession = session.New(&aws.Config{
+		Credentials: credentials.NewStaticCredentials(Aws.AccessKey, Aws.SecretKey, ""),
+		Endpoint:    aws.String(Aws.Endpoint),
+		Region:      aws.String(Aws.Region),
+	})
+	if Debug == true { // When creating a local S3 bucket with localstack, it use localhost so <bucketname>.localhost/<key> doesn't exist, but localhost/<key> does.
+		AwsSession.Config = AwsSession.Config.WithS3ForcePathStyle(true)
+	}
 }

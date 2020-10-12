@@ -29,15 +29,16 @@ services:
     ports:
       - 6379:6379
   localstack: # for s3 testing
-    container_name: localstack_dev
+    container_name: localstack
     image: localstack/localstack:latest
     ports:
       - 4563-4599:4563-4599
-      - 8081:8081
-    environment: 
+    environment:
+      - DATA_DIR=/tmp/localstack/data 
       - SERVICES=s3
     volumes:
       - './.localstack:/tmp/localstack'
+      - '/var/run/docker.sock:/var/run/docker.sock'
 networks:
   app-network:
     driver: bridge

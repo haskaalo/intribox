@@ -11,12 +11,12 @@ import (
 // R exported local backend
 type R struct{}
 
-// RemoveFile from local
-func (*R) RemoveFile(path string) error {
+// RemoveObject from local
+func (*R) RemoveObject(path string) error {
 	return os.Remove(filepath.Join(config.Storage.UserDataPath, path))
 }
 
-// ReadFile from local
-func (*R) ReadFile(name string) (io.Reader, error) {
+// ReadObject from local
+func (*R) ReadObject(name string) (io.Reader, error) {
 	return nil, nil
 }

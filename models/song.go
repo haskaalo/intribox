@@ -11,6 +11,7 @@ import (
 type Song struct {
 	ID       string    `json:"id" db:"id"`
 	Name     string    `json:"name" db:"name"`
+	ObjectID string    `json:"objectid" db:"objectid"`
 	Ext      string    `json:"ext" db:"ext"`
 	OwnerID  int       `json:"ownerid" db:"ownerid"`
 	UploadAt time.Time `json:"uploadat" db:"uploadat"`
@@ -25,8 +26,8 @@ func (s *Song) InsertNewSong() (songid int, err error) {
 
 func (s *Song) insertNewSong(q sqlx.Ext) (int, error) {
 	var id int
-	query := `INSERT INTO song (name, ext, ownerid, filehash, size) VALUES ($1, $2, $3, $4, $5) RETURNING id`
-	err := sqlx.Get(q, &id, query, s.Name, s.Ext, s.OwnerID, s.FileHash, s.Size)
+	query := `INSERT INTO song (name, objectid, ext, ownerid, filehash, size) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`
+	err := sqlx.Get(q, &id, query, s.Name, s.ObjectID, s.Ext, s.OwnerID, s.FileHash, s.Size)
 
 	return id, knownDatabaseError(err)
 }
@@ -59,5 +60,5 @@ func getSongByID(q sqlx.Ext, songid int) (*Song, error) {
 
 // GetSongPath Get song path based on ownerid and hash
 func (s *Song) GetSongPath() string {
-	return fmt.Sprintf("%o/song/%s.%s", s.OwnerID, s.FileHash, s.Ext)
+	return fmt.Sprintf("%o/song/%s.%s", s.OwnerID, s.ObjectID, s.Ext)
 }
