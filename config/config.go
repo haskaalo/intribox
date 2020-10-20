@@ -3,6 +3,7 @@ package config
 import (
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -17,6 +18,7 @@ var (
 	Debug bool
 
 	Server struct {
+		Hostname    string // can be set to localhost:port
 		Port        int
 		MaxSongSize int64
 	}
@@ -87,6 +89,7 @@ func init() {
 	}
 
 	Server.Port = cfg.Section("Server").Key("port").MustInt(8080)
+	Server.Hostname = cfg.Section("Server").Key("hostname").MustString("localhost:" + strconv.Itoa(Server.Port))
 	Server.MaxSongSize = cfg.Section("Server").Key("maxsongsize").MustInt64(2000000000)
 
 	Database.User = cfg.Section("Database").Key("user").MustString("postgres")
@@ -107,11 +110,11 @@ func init() {
 	Storage.UserDataPath = cfg.Section("Storage").Key("userdatapath").MustString(filepath.Join(dir, "/data"))
 	Storage.RemoteName = cfg.Section("Storage").Key("remotename").MustString("local")
 
-	Aws.Endpoint = cfg.Section("S3").Key("endpoint").MustString("127.0.0.1:4566") // Default value equal to the localstack test server
-	Aws.Bucket = cfg.Section("S3").Key("bucket").MustString("testbucket")         // Default value equal to the localstack test server
+	Aws.Endpoint = cfg.Section("S3").Key("endpoint").MustString("http://127.0.0.1:4566") // Default value equal to the localstack test server
+	Aws.Bucket = cfg.Section("S3").Key("bucket").MustString("testbucket")                // Default value equal to the localstack test server
 	Aws.Region = cfg.Section("S3").Key("region").MustString("us-east1")
-	Aws.AccessKey = cfg.Section("S3").Key("accesskey").MustString("")
-	Aws.SecretKey = cfg.Section("S3").Key("secretkey").MustString("")
+	Aws.AccessKey = cfg.Section("S3").Key("accesskey").MustString("anything_test")
+	Aws.SecretKey = cfg.Section("S3").Key("secretkey").MustString("anything_test")
 	AwsSession = session.New(&aws.Config{
 		Credentials: credentials.NewStaticCredentials(Aws.AccessKey, Aws.SecretKey, ""),
 		Endpoint:    aws.String(Aws.Endpoint),

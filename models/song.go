@@ -58,7 +58,7 @@ func getSongByID(q sqlx.Ext, songid int) (*Song, error) {
 	return song, knownDatabaseError(err)
 }
 
-// GetSongPath Get song path based on ownerid and hash
+// GetSongPath Get song path based on ownerID and objectID
 func (s *Song) GetSongPath() string {
 	return fmt.Sprintf("%o/song/%s.%s", s.OwnerID, s.ObjectID, s.Ext)
 }

@@ -17,6 +17,17 @@ func (*R) RemoveObject(path string) error {
 }
 
 // ReadObject from local
-func (*R) ReadObject(name string) (io.Reader, error) {
-	return nil, nil
+func (*R) readObject(path string) (io.Reader, error) {
+	fullPath := config.Storage.UserDataPath + "/" + path
+
+	file, err := os.OpenFile(filepath.Dir(fullPath), os.O_RDONLY, 0755)
+	if err != nil {
+		return nil, err
+	}
+	return file, nil
+}
+
+// GetReadObjectURL Return an path similar to models.GetSongPath (e.g.: localhost:8080/api/storage/2/song/61230e8e-896d-4380-b00e-64364e79cad5)
+func (*R) GetReadObjectURL(path string) (string, error) {
+	return (config.Server.Hostname + "/api/storage" + path), nil
 }

@@ -9,7 +9,7 @@ type Backend interface {
 
 	RemoveObject(path string) error
 
-	ReadObject(path string) (io.Reader, error)
+	GetReadObjectURL(path string) (string, error)
 }
 
 // ObjectAction Upload prepared (tmp) file to storage

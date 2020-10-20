@@ -1,7 +1,7 @@
 package s3
 
 import (
-	"io"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
@@ -27,8 +27,13 @@ func (*R) RemoveObject(path string) error {
 	return err
 }
 
-// ReadObject from s3
-// TODO
-func (*R) ReadObject(name string) (io.Reader, error) {
-	return nil, nil
+// GetReadObjectURL return a presigned URL so users can download file directly from S3 without reaching our server, thus resulting less bandwidth usage
+func (*R) GetReadObjectURL(path string) (string, error) {
+	req, _ := s3Client.GetObjectRequest(&s3.GetObjectInput{
+		Bucket: aws.String(config.Aws.Bucket),
+		Key:    aws.String(path),
+	})
+	url, err := req.Presign(5 * time.Minute)
+
+	return url, err
 }
