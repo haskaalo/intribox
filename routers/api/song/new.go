@@ -22,7 +22,6 @@ const SongContentType = "application/octet-stream"
 
 func postNew(w http.ResponseWriter, r *http.Request) {
 	r.Body = http.MaxBytesReader(w, r.Body, config.Server.MaxSongSize)
-	defer r.Body.Close()
 
 	session := request.GetSession(r)
 

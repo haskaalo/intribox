@@ -21,17 +21,16 @@ func TestPostLogout(t *testing.T) {
 
 	user, err := test.CreateTestUser()
 	assert.NoError(t, err)
+	testUserSession, err := test.CreateTestUserSession(user.ID)
+	assert.NoError(t, err)
 
 	test.Router.HandleFunc("/logout", postLogout).Methods("POST")
 	test.Router.Use(middlewares.SetSession)
 
 	t.Run("Should logout authenticated user", func(t *testing.T) {
-		selector, validator, err := models.InitiateSession(user.ID)
-		assert.NoError(t, err)
-
 		req, err := http.NewRequest("POST", test.Server.URL+"/logout", nil)
 		assert.NoError(t, err, "Request should have no error")
-		req.Header.Add(models.SessionHeaderName, selector+"."+validator)
+		req.Header.Add(models.SessionHeaderName, testUserSession.FullSessionToken)
 
 		client := &http.Client{}
 		resp, err := client.Do(req)
@@ -39,7 +38,7 @@ func TestPostLogout(t *testing.T) {
 		assert.NoError(t, err, "HTTP Post should have no error")
 		assert.Equal(t, http.StatusOK, resp.StatusCode, "Expect status code to be 200")
 
-		_, err = models.GetSessionBySelector(selector)
+		_, err = models.GetSessionBySelector(testUserSession.Selector)
 		assert.Equal(t, redis.Nil, err, "Expect session to no longer exist")
 	})
 

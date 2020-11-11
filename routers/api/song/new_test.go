@@ -24,16 +24,16 @@ func TestPostNew(t *testing.T) {
 	user, err := test.CreateTestUser()
 	assert.NoError(t, err)
 
+	testUserSession, err := test.CreateTestUserSession(user.ID)
+	assert.NoError(t, err)
+
 	test.Router.HandleFunc("/new", postNew).Methods("POST")
 	test.Router.Use(middlewares.SetSession)
 
 	t.Run("Should upload new song with no error", func(t *testing.T) {
-		selector, validator, err := models.InitiateSession(user.ID)
-		assert.NoError(t, err)
-
 		req, err := http.NewRequest("POST", test.Server.URL+"/new", bytes.NewBuffer([]byte("Some sort of content")))
 		assert.NoError(t, err, "Request should have no error")
-		req.Header.Add(models.SessionHeaderName, selector+"."+validator)
+		req.Header.Add(models.SessionHeaderName, testUserSession.FullSessionToken)
 		req.Header.Add("Content-Type", SongContentType)
 		req.Header.Add(SongNameHeaderName, "Testing - A song.mp3")
 
@@ -51,7 +51,7 @@ func TestPostNew(t *testing.T) {
 		err = json.Unmarshal(body, &reqBody)
 		assert.NoError(t, err)
 
-		song, err := models.GetSongByID(int(reqBody["id"].(float64)))
+		song, err := models.GetSongByID(int(reqBody["id"].(float64)), user.ID)
 		assert.NoError(t, err)
 
 		assert.Equal(t, "Testing - A song.mp3", song.Name+"."+song.Ext, "The song should exist in the database")
@@ -59,12 +59,9 @@ func TestPostNew(t *testing.T) {
 	})
 
 	t.Run("Should return invalid parameter if no song name is in the header", func(t *testing.T) {
-		selector, validator, err := models.InitiateSession(user.ID)
-		assert.NoError(t, err)
-
 		req, err := http.NewRequest("POST", test.Server.URL+"/new", bytes.NewBuffer([]byte("Some sort of content")))
 		assert.NoError(t, err, "Request should have no error")
-		req.Header.Add(models.SessionHeaderName, selector+"."+validator)
+		req.Header.Add(models.SessionHeaderName, testUserSession.FullSessionToken)
 
 		client := &http.Client{}
 		resp, err := client.Do(req)

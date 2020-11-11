@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/haskaalo/intribox/models"
+	"github.com/haskaalo/intribox/request"
 	"github.com/haskaalo/intribox/response"
 	"github.com/haskaalo/intribox/storage"
 	"github.com/rs/zerolog/log"
@@ -14,7 +15,14 @@ type getSongURLParams struct {
 	SongID int `json:"songid"`
 }
 
+type getSongURLResponse struct {
+	URL string `json:"url"`
+}
+
 func getSongURL(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+
+	userSession := request.GetSession(r)
 	params := new(getSongURLParams)
 	err := json.NewDecoder(r.Body).Decode(params)
 	if err != nil {
@@ -22,7 +30,7 @@ func getSongURL(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	song, err := models.GetSongByID(params.SongID)
+	song, err := models.GetSongByID(params.SongID, userSession.UserID)
 	if err == models.ErrRecordNotFound {
 		response.NotFound(w)
 		return
@@ -39,7 +47,7 @@ func getSongURL(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response.Respond(w, &response.M{
-		"url": songObjectURL,
+	response.Respond(w, &getSongURLResponse{
+		URL: songObjectURL,
 	}, http.StatusOK)
 }

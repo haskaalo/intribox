@@ -7,6 +7,13 @@ import (
 // TestUserPassword Password used for CreateTestUser
 var TestUserPassword = "137945"
 
+// TestingUserSession Test user session information
+type TestingUserSession struct {
+	Selector         string
+	Validator        string
+	FullSessionToken string
+}
+
 // CreateTestUser Create a test user
 func CreateTestUser() (*models.User, error) {
 	user := &models.User{
@@ -21,4 +28,16 @@ func CreateTestUser() (*models.User, error) {
 
 	usr, err := models.GetUserByEmail("test@example.com")
 	return usr, err
+}
+
+// CreateTestUserSession Initiate a new session for a test user
+func CreateTestUserSession(userID int) (*TestingUserSession, error) {
+	selector, validator, err := models.InitiateSession(userID)
+
+	s := new(TestingUserSession)
+	s.Selector = selector
+	s.Validator = validator
+	s.FullSessionToken = selector + "." + validator
+
+	return s, err
 }

@@ -46,14 +46,14 @@ func songHashExist(q sqlx.Ext, ownerid int, hash string) (bool, error) {
 }
 
 // GetSongByID Select a song with a ID
-func GetSongByID(songid int) (*Song, error) {
-	return getSongByID(db, songid)
+func GetSongByID(songid int, ownerid int) (*Song, error) {
+	return getSongByID(db, songid, ownerid)
 }
 
-func getSongByID(q sqlx.Ext, songid int) (*Song, error) {
+func getSongByID(q sqlx.Ext, songid int, ownerid int) (*Song, error) {
 	song := &Song{}
-	query := `SELECT * FROM song WHERE id=$1`
-	err := sqlx.Get(q, song, query, songid)
+	query := `SELECT * FROM song WHERE id=$1 AND ownerid=$2`
+	err := sqlx.Get(q, song, query, songid, ownerid)
 
 	return song, knownDatabaseError(err)
 }
