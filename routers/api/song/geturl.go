@@ -20,8 +20,6 @@ type getSongURLResponse struct {
 }
 
 func getSongURL(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-
 	userSession := request.GetSession(r)
 	params := new(getSongURLParams)
 	err := json.NewDecoder(r.Body).Decode(params)

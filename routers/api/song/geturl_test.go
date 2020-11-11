@@ -20,10 +20,10 @@ func TestGetSongURL(t *testing.T) {
 	err := models.DeleteAllUsers()
 	assert.NoError(t, err)
 
-	user, err := test.CreateTestUser()
+	user, err := models.CreateTestUser()
 	assert.NoError(t, err)
 
-	userSession, err := test.CreateTestUserSession(user.ID)
+	userSession, err := models.CreateTestUserSession(user.ID)
 	assert.NoError(t, err)
 
 	test.Router.HandleFunc("/get_songurl", getSongURL).Methods("GET")

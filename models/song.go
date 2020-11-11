@@ -51,7 +51,7 @@ func GetSongByID(songid int, ownerid int) (*Song, error) {
 }
 
 func getSongByID(q sqlx.Ext, songid int, ownerid int) (*Song, error) {
-	song := &Song{}
+	song := new(Song)
 	query := `SELECT * FROM song WHERE id=$1 AND ownerid=$2`
 	err := sqlx.Get(q, song, query, songid, ownerid)
 
@@ -61,4 +61,10 @@ func getSongByID(q sqlx.Ext, songid int, ownerid int) (*Song, error) {
 // GetSongPath Get song path based on ownerID and objectID
 func (s *Song) GetSongPath() string {
 	return fmt.Sprintf("%o/song/%s.%s", s.OwnerID, s.ObjectID, s.Ext)
+}
+
+// DeleteAllSongs Only should be used for testing
+func DeleteAllSongs() error {
+	_, err := db.NamedExec("DELETE FROM song", map[string]interface{}{})
+	return err
 }

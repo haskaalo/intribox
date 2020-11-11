@@ -21,10 +21,10 @@ func TestPostNew(t *testing.T) {
 	err := models.DeleteAllUsers()
 	assert.NoError(t, err)
 
-	user, err := test.CreateTestUser()
+	user, err := models.CreateTestUser()
 	assert.NoError(t, err)
 
-	testUserSession, err := test.CreateTestUserSession(user.ID)
+	testUserSession, err := models.CreateTestUserSession(user.ID)
 	assert.NoError(t, err)
 
 	test.Router.HandleFunc("/new", postNew).Methods("POST")

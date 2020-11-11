@@ -20,7 +20,7 @@ func TestPostLogin(t *testing.T) {
 	err := models.DeleteAllUsers()
 	assert.NoError(t, err)
 
-	user, err := test.CreateTestUser()
+	user, err := models.CreateTestUser()
 	assert.NoError(t, err)
 
 	test.Router.HandleFunc("/login", postLogin).Methods("POST")
@@ -28,7 +28,7 @@ func TestPostLogin(t *testing.T) {
 	t.Run("Should authenticate user with correct password", func(t *testing.T) {
 		jsonLoginParams, err := json.Marshal(&loginParams{
 			Email:    user.Email,
-			Password: test.TestUserPassword,
+			Password: models.TestUserPassword,
 		})
 		assert.NoError(t, err)
 

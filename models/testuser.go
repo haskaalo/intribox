@@ -1,8 +1,4 @@
-package test
-
-import (
-	"github.com/haskaalo/intribox/models"
-)
+package models
 
 // TestUserPassword Password used for CreateTestUser
 var TestUserPassword = "137945"
@@ -15,8 +11,8 @@ type TestingUserSession struct {
 }
 
 // CreateTestUser Create a test user
-func CreateTestUser() (*models.User, error) {
-	user := &models.User{
+func CreateTestUser() (*User, error) {
+	user := &User{
 		Email:    "test@example.com",
 		Password: []byte("$2y$12$LXAwwYDwaHY7dR/LM8QzIOWE.nqbJ7wor/u7KZBrh3e6wnlqZsn66"),
 	}
@@ -26,13 +22,13 @@ func CreateTestUser() (*models.User, error) {
 		return nil, err
 	}
 
-	usr, err := models.GetUserByEmail("test@example.com")
+	usr, err := GetUserByEmail("test@example.com")
 	return usr, err
 }
 
 // CreateTestUserSession Initiate a new session for a test user
 func CreateTestUserSession(userID int) (*TestingUserSession, error) {
-	selector, validator, err := models.InitiateSession(userID)
+	selector, validator, err := InitiateSession(userID)
 
 	s := new(TestingUserSession)
 	s.Selector = selector
