@@ -1,4 +1,4 @@
-package song
+package media
 
 import (
 	"net/http"
@@ -14,43 +14,38 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// SongNameHeadName The header required to know song name
-const SongNameHeaderName = "X-Song-Name"
+// MediaNameHeaderName The header required to get the file name
+const MediaNameHeaderName = "X-Media-Name"
 
-// SongContentType Content-Type required to post a new song
-const SongContentType = "application/octet-stream"
+// ValidContentType Acceptable content-type for new media to be uploaded
+func ValidContentType() []string {
+	return []string{"image/png", "image/jpeg", "video/mp4"}
+}
 
 func postNew(w http.ResponseWriter, r *http.Request) {
-	r.Body = http.MaxBytesReader(w, r.Body, config.Server.MaxSongSize)
-
+	r.Body = http.MaxBytesReader(w, r.Body, config.Server.MaxMediaSize)
 	session := request.GetSession(r)
 
-	songName := r.Header.Get(SongNameHeaderName)
-	if filepath.Ext(songName) == "" {
-		response.InvalidParameter(w, SongNameHeaderName)
-		return
-	}
-
-	if request.RequireContentType(SongContentType, r) == false {
+	if request.RequireContentType(ValidContentType(), r) == false {
 		response.InvalidParameter(w, "Content-Type")
 		return
 	}
 
-	song := &models.Song{
-		Name:     fileNameNoExt(songName),
+	media := &models.Media{
+		Name:     r.Header.Get(MediaNameHeaderName),
 		ObjectID: uuid.New().String(),
-		Ext:      filepath.Ext(songName)[1:],
+		Type:     r.Header.Get("Content-Type"),
 		OwnerID:  session.UserID,
 	}
 
-	objectWriter, err := storage.Remote.WriteObject(r.Body, song.GetSongPath())
+	objectWriter, err := storage.Remote.WriteObject(r.Body, media.GetMediaPath())
 	if err != nil {
 		log.Warn().Err(err).Msg("Error while creating object writer")
 		response.InternalError(w)
 		return
 	}
 
-	exist, err := models.SongHashExist(session.UserID, song.FileHash)
+	exist, err := models.MediaHashExist(session.UserID, media.FileHash)
 	if err != nil {
 		log.Warn().Err(err).Msg("Error while querying database")
 		objectWriter.Delete()
@@ -62,24 +57,24 @@ func postNew(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	song.FileHash = objectWriter.SHA256()
-	song.Size = objectWriter.Size()
+	media.FileHash = objectWriter.SHA256()
+	media.Size = objectWriter.Size()
 
-	songid, err := song.InsertNewSong()
+	mediaid, err := media.InsertNewMedia()
 	if err != nil {
 		response.InternalError(w)
 
 		err = objectWriter.Delete()
 		if err != nil {
-			log.Error().Err(err).Str("path", song.GetSongPath()).Msg("Cannot remove file from remote after error from writing to database")
+			log.Error().Err(err).Str("path", media.GetMediaPath()).Msg("Cannot remove file from remote after error from writing to database")
 		}
 
-		log.Warn().Err(err).Msg("Error while inserting song metadata to database")
+		log.Warn().Err(err).Msg("Error while inserting media metadata to database")
 		return
 	}
 
 	response.Respond(w, &response.M{
-		"id": songid,
+		"id": mediaid,
 	}, 200)
 }
 

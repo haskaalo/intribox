@@ -32,7 +32,7 @@ func (*R) WriteObject(in io.Reader, path string) (backend.ObjectAction, error) {
 		return nil, err
 	}
 
-	// Copy song to tempfile
+	// Copy media to tempfile
 	hasher := sha256.New()
 	size, err := io.Copy(osfile, io.TeeReader(in, hasher))
 	osfile.Close()

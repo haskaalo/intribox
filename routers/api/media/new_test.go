@@ -1,4 +1,4 @@
-package song
+package media
 
 import (
 	"bytes"
@@ -30,12 +30,12 @@ func TestPostNew(t *testing.T) {
 	test.Router.HandleFunc("/new", postNew).Methods("POST")
 	test.Router.Use(middlewares.SetSession)
 
-	t.Run("Should upload new song with no error", func(t *testing.T) {
+	t.Run("Should upload new media with no error", func(t *testing.T) {
 		req, err := http.NewRequest("POST", test.Server.URL+"/new", bytes.NewBuffer([]byte("Some sort of content")))
 		assert.NoError(t, err, "Request should have no error")
 		req.Header.Add(models.SessionHeaderName, testUserSession.FullSessionToken)
-		req.Header.Add("Content-Type", SongContentType)
-		req.Header.Add(SongNameHeaderName, "Testing - A song.mp3")
+		req.Header.Add("Content-Type", "image/png")
+		req.Header.Add(MediaNameHeaderName, "Testing picture")
 
 		client := &http.Client{}
 		resp, err := client.Do(req)
@@ -51,14 +51,14 @@ func TestPostNew(t *testing.T) {
 		err = json.Unmarshal(body, &reqBody)
 		assert.NoError(t, err)
 
-		song, err := models.GetSongByID(int(reqBody["id"].(float64)), user.ID)
+		media, err := models.GetMediaByID(int(reqBody["id"].(float64)), user.ID)
 		assert.NoError(t, err)
 
-		assert.Equal(t, "Testing - A song.mp3", song.Name+"."+song.Ext, "The song should exist in the database")
+		assert.Equal(t, "Testing picture", media.Name, "The picture should exist in the database")
 		// TODO: Check if it exist in storage
 	})
 
-	t.Run("Should return invalid parameter if no song name is in the header", func(t *testing.T) {
+	t.Run("Should return invalid parameter if no media name is in the header", func(t *testing.T) {
 		req, err := http.NewRequest("POST", test.Server.URL+"/new", bytes.NewBuffer([]byte("Some sort of content")))
 		assert.NoError(t, err, "Request should have no error")
 		req.Header.Add(models.SessionHeaderName, testUserSession.FullSessionToken)
@@ -70,14 +70,14 @@ func TestPostNew(t *testing.T) {
 		assert.Equal(t, http.StatusBadRequest, resp.StatusCode, "Expect status code to be 400")
 	})
 
-	t.Run("Should return invalid parameter if content-type doesn't match SongContentType", func(t *testing.T) {
+	t.Run("Should return invalid parameter if content-type doesn't match ValidContentType", func(t *testing.T) {
 		selector, validator, err := models.InitiateSession(user.ID)
 		assert.NoError(t, err)
 
 		req, err := http.NewRequest("POST", test.Server.URL+"/new", bytes.NewBuffer([]byte("Some sort of content")))
 		assert.NoError(t, err, "Request should have no error")
 		req.Header.Add(models.SessionHeaderName, selector+"."+validator)
-		req.Header.Add(SongNameHeaderName, "Testing - A song.mp3")
+		req.Header.Add(MediaNameHeaderName, "Testing picture.png")
 		req.Header.Add("Content-Type", "application/json")
 
 		client := &http.Client{}

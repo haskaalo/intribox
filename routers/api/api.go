@@ -3,11 +3,11 @@ package api
 import (
 	"github.com/gorilla/mux"
 	"github.com/haskaalo/intribox/routers/api/auth"
-	"github.com/haskaalo/intribox/routers/api/song"
+	"github.com/haskaalo/intribox/routers/api/media"
 )
 
 // InitRouter Add all API paths to a router
 func InitRouter(r *mux.Router) {
 	auth.InitRouter(r.PathPrefix("/auth").Subrouter())
-	song.InitRouter(r.PathPrefix("/song").Subrouter())
+	media.InitRouter(r.PathPrefix("/media").Subrouter())
 }

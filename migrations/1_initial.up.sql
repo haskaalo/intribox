@@ -9,14 +9,14 @@ CREATE TABLE users (
 	PRIMARY KEY (id)
 );
 
-CREATE TABLE song (
+CREATE TABLE media (
 	id SERIAL NOT NULL,
 	objectid varchar(36) UNIQUE NOT NULL CHECK (char_length(objectid) = 36),
 	name varchar(255) NOT NULL,
-	ext TEXT NOT NULL,
+	type TEXT NOT NULL,
 	ownerid INT REFERENCES users(id) ON DELETE CASCADE,
-	uploadat DATE NOT NULL DEFAULT NOW(),
+	uploaded_time DATE NOT NULL DEFAULT NOW(),
 	filehash citext NOT NULL,
 	size BIGINT NOT NULL,
-	PRIMARY KEY (id, filehash)
+	PRIMARY KEY (id)
 );

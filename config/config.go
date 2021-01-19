@@ -18,9 +18,9 @@ var (
 	Debug bool
 
 	Server struct {
-		Hostname    string // can be set to localhost:port
-		Port        int
-		MaxSongSize int64
+		Hostname     string // can be set to localhost:port
+		Port         int
+		MaxMediaSize int64
 	}
 
 	Database struct {
@@ -90,7 +90,7 @@ func init() {
 
 	Server.Port = cfg.Section("Server").Key("port").MustInt(8080)
 	Server.Hostname = cfg.Section("Server").Key("hostname").MustString("localhost:" + strconv.Itoa(Server.Port))
-	Server.MaxSongSize = cfg.Section("Server").Key("maxsongsize").MustInt64(2000000000)
+	Server.MaxMediaSize = cfg.Section("Server").Key("maxmediasize").MustInt64(2000000000)
 
 	Database.User = cfg.Section("Database").Key("user").MustString("postgres")
 	Database.Database = cfg.Section("Database").Key("database").MustString("intribox")

@@ -1,4 +1,4 @@
-package song
+package media
 
 import (
 	"encoding/json"
@@ -11,41 +11,41 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-type getSongURLParams struct {
-	SongID int `json:"songid"`
+type getMediaURLParams struct {
+	MediaID int `json:"mediaid"`
 }
 
-type getSongURLResponse struct {
+type getMediaURLResponse struct {
 	URL string `json:"url"`
 }
 
-func getSongURL(w http.ResponseWriter, r *http.Request) {
+func getMediaURL(w http.ResponseWriter, r *http.Request) {
 	userSession := request.GetSession(r)
-	params := new(getSongURLParams)
+	params := new(getMediaURLParams)
 	err := json.NewDecoder(r.Body).Decode(params)
 	if err != nil {
-		response.InternalError(w) // Probably change depending on the error.
+		response.InternalError(w) // TODO: Change the error depending on encoding/json error
 		return
 	}
 
-	song, err := models.GetSongByID(params.SongID, userSession.UserID)
+	media, err := models.GetMediaByID(params.MediaID, userSession.UserID)
 	if err == models.ErrRecordNotFound {
 		response.NotFound(w)
 		return
 	} else if err != nil {
-		log.Warn().Err(err).Msg("Error while trying to fetch a specified song from database")
+		log.Warn().Err(err).Msg("Error while trying to fetch a specified media from database")
 		response.InternalError(w)
 		return
 	}
 
-	songObjectURL, err := storage.Remote.GetReadObjectURL(song.GetSongPath())
+	mediaObjectURL, err := storage.Remote.GetReadObjectURL(media.GetMediaPath())
 	if err != nil {
 		log.Warn().Err(err).Msg("Failed to GetReadObjectURL from remote")
 		response.InternalError(w)
 		return
 	}
 
-	response.Respond(w, &getSongURLResponse{
-		URL: songObjectURL,
+	response.Respond(w, &getMediaURLResponse{
+		URL: mediaObjectURL,
 	}, http.StatusOK)
 }

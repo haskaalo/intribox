@@ -27,7 +27,7 @@ func (*R) readObject(path string) (io.Reader, error) {
 	return file, nil
 }
 
-// GetReadObjectURL Return an path similar to models.GetSongPath (e.g.: localhost:8080/api/storage/2/song/61230e8e-896d-4380-b00e-64364e79cad5)
+// GetReadObjectURL Return an path similar to models.GetMediaPath (e.g.: localhost:8080/api/storage/2/media/61230e8e-896d-4380-b00e-64364e79cad5)
 func (*R) GetReadObjectURL(path string) (string, error) {
 	return (config.Server.Hostname + "/api/storage" + path), nil
 }

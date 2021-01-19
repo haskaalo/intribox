@@ -1,4 +1,4 @@
-package song
+package media
 
 import (
 	"bytes"
@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetSongURL(t *testing.T) {
+func TestGetMediaURL(t *testing.T) {
 	test.MockServerSetup()
 	defer test.MockServerTearDown()
 
@@ -26,25 +26,25 @@ func TestGetSongURL(t *testing.T) {
 	userSession, err := models.CreateTestUserSession(user.ID)
 	assert.NoError(t, err)
 
-	test.Router.HandleFunc("/get_songurl", getSongURL).Methods("GET")
+	test.Router.HandleFunc("/get_mediaurl", getMediaURL).Methods("GET")
 	test.Router.Use(middlewares.SetSession)
-	testingURL := test.Server.URL + "/get_songurl"
+	testingURL := test.Server.URL + "/get_mediaurl"
 
-	t.Run("Should return a valid song download url", func(t *testing.T) {
-		// Inserting a fake song in database
-		fakeSong := &models.Song{
-			Name:     "Darude - Sandstorm",
+	t.Run("Should return a valid media download url", func(t *testing.T) {
+		// Inserting a fake (testing) picture in database
+		fakeMedia := &models.Media{
+			Name:     "Testing Picture",
 			ObjectID: uuid.New().String(),
-			Ext:      "mp3",
+			Type:     "image/png",
 			OwnerID:  user.ID,
 			FileHash: "ab43487f946e97f24100685cb1d167024eb9dce910c18686feecf814bccc1749",
 			Size:     420,
 		}
 
-		fakeSongID, err := fakeSong.InsertNewSong()
+		fakeMediaID, err := fakeMedia.InsertNewMedia()
 		assert.NoError(t, err)
-		jsonGetURLParams, err := json.Marshal(&getSongURLParams{
-			SongID: fakeSongID,
+		jsonGetURLParams, err := json.Marshal(&getMediaURLParams{
+			MediaID: fakeMediaID,
 		})
 		assert.NoError(t, err)
 
@@ -59,17 +59,17 @@ func TestGetSongURL(t *testing.T) {
 		assert.Equal(t, http.StatusOK, resp.StatusCode, "Expect status code to be 200 (OK)")
 
 		defer resp.Body.Close()
-		reqBody := new(getSongURLResponse)
+		reqBody := new(getMediaURLResponse)
 		err = json.NewDecoder(resp.Body).Decode(reqBody)
 		assert.NoError(t, err)
-		assert.NotEmpty(t, reqBody.URL, "Expect the Song URL string to not be empty")
+		assert.NotEmpty(t, reqBody.URL, "Expect the media URL string to not be empty")
 
 		// TODO: assert if the returned URL work
 	})
 
-	t.Run("Should return 404 if the song doesn't exist", func(t *testing.T) {
-		jsonGetURLParams, err := json.Marshal(&getSongURLParams{
-			SongID: 420000, // This song ID doesn't exist in testing database
+	t.Run("Should return 404 if the visual media doesn't exist", func(t *testing.T) {
+		jsonGetURLParams, err := json.Marshal(&getMediaURLParams{
+			MediaID: 420000, // This media ID doesn't exist in testing database
 		})
 
 		httpRequest, err := http.NewRequest("GET", testingURL, bytes.NewReader(jsonGetURLParams))
