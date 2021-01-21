@@ -6,9 +6,7 @@ import (
 	"time"
 
 	"github.com/go-redis/redis"
-
-	"github.com/haskaalo/intribox/modules/hash"
-	"github.com/haskaalo/intribox/modules/random"
+	"github.com/haskaalo/intribox/utils"
 )
 
 // ErrNotValidSessionToken Invalid token format
@@ -39,7 +37,7 @@ type Session struct {
 // GetSessionBySelector Get Session model with a selector (string)
 func GetSessionBySelector(selector string) (*Session, error) {
 	sess := new(Session)
-	hashSelector := hash.SHA1([]byte(selector))
+	hashSelector := utils.SHA1([]byte(selector))
 	vals, err := r.HGetAll(SessionPrefix + hashSelector).Result()
 	if len(vals) == 0 { // Only way to know if key doesn't exist
 		return nil, redis.Nil
@@ -80,7 +78,7 @@ func GetSessionByToken(token string) (*Session, error) {
 		return nil, err
 	}
 
-	hashedValidator := hash.SHA1([]byte(parsedToken.Validator))
+	hashedValidator := utils.SHA1([]byte(parsedToken.Validator))
 	if hashedValidator == session.Validator {
 		return session, nil
 	}
@@ -90,7 +88,7 @@ func GetSessionByToken(token string) (*Session, error) {
 
 // DeleteSessionBySelector Delete a session by using a selector
 func DeleteSessionBySelector(selector string) error {
-	hashSelector := hash.SHA1([]byte(selector))
+	hashSelector := utils.SHA1([]byte(selector))
 	_, err := r.Del(SessionPrefix + hashSelector).Result()
 
 	return err
@@ -98,7 +96,7 @@ func DeleteSessionBySelector(selector string) error {
 
 // ResetTimeSession Reset time of a session based on config.ini Expire time
 func (s Session) ResetTimeSession() error {
-	hashSelector := hash.SHA1([]byte(s.Selector))
+	hashSelector := utils.SHA1([]byte(s.Selector))
 
 	err := r.Expire(SessionPrefix+hashSelector, SessionExpireTime).Err()
 	if err != nil {
@@ -115,13 +113,13 @@ func (s Session) ResetTimeSession() error {
 
 // InitiateSession Create a session for a user
 func InitiateSession(uid int) (selector string, validator string, err error) {
-	s := random.RandString(12)
-	v := random.RandString(50)
-	hashS := hash.SHA1([]byte(s))
+	s := utils.RandString(12)
+	v := utils.RandString(50)
+	hashS := utils.SHA1([]byte(s))
 
 	err = r.HMSet(SessionPrefix+hashS, map[string]interface{}{
 		"userid":    uid,
-		"validator": hash.SHA1([]byte(v)),
+		"validator": utils.SHA1([]byte(v)),
 		"createdat": time.Now().Unix(),
 	}).Err()
 	if err != nil {

@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/go-redis/redis"
-	"github.com/haskaalo/intribox/modules/hash"
+	"github.com/haskaalo/intribox/utils"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,7 +17,7 @@ func TestGetSessionBySelector(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, 420, sess.UserID, "UserID in redis should match what is expected")
 		assert.Equal(t, selector, sess.Selector)
-		assert.Equal(t, hash.SHA1([]byte(validator)), sess.Validator)
+		assert.Equal(t, utils.SHA1([]byte(validator)), sess.Validator)
 	})
 
 	t.Run("Should return an error if the selector doesn't exist", func(t *testing.T) {
@@ -38,7 +38,7 @@ func TestGetSessionByToken(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, 420, sess.UserID, "UserID in redis should match what is expected")
 		assert.Equal(t, selector, sess.Selector)
-		assert.Equal(t, hash.SHA1([]byte(validator)), sess.Validator)
+		assert.Equal(t, utils.SHA1([]byte(validator)), sess.Validator)
 	})
 
 	t.Run("Should return an error if token is not in a valid format", func(t *testing.T) {

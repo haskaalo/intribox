@@ -8,8 +8,8 @@ import (
 	"testing"
 
 	"github.com/haskaalo/intribox/models"
-	"github.com/haskaalo/intribox/modules/test"
 	"github.com/haskaalo/intribox/request"
+	"github.com/haskaalo/intribox/utils/test"
 	"github.com/stretchr/testify/assert"
 )
 

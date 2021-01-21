@@ -8,9 +8,9 @@ import (
 	"testing"
 
 	"github.com/haskaalo/intribox/models"
-	"github.com/haskaalo/intribox/modules/hash"
-	"github.com/haskaalo/intribox/modules/test"
 	"github.com/haskaalo/intribox/request"
+	"github.com/haskaalo/intribox/utils"
+	"github.com/haskaalo/intribox/utils/test"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -39,5 +39,5 @@ func TestSetSession(t *testing.T) {
 
 	body, err := ioutil.ReadAll(resp.Body)
 	assert.Nil(t, err)
-	assert.Equal(t, selector+"|"+hash.SHA1([]byte(v))+"|"+"1", string(body))
+	assert.Equal(t, selector+"|"+utils.SHA1([]byte(v))+"|"+"1", string(body))
 }
