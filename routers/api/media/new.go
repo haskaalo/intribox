@@ -1,6 +1,7 @@
 package media
 
 import (
+	"fmt"
 	"net/http"
 	"path/filepath"
 	"strings"
@@ -14,31 +15,26 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// MediaNameHeaderName The header required to get the file name
-const MediaNameHeaderName = "X-Media-Name"
-
-// ValidContentType Acceptable content-type for new media to be uploaded
-func ValidContentType() []string {
-	return []string{"image/png", "image/jpeg", "video/mp4"}
-}
-
 func postNew(w http.ResponseWriter, r *http.Request) {
 	r.Body = http.MaxBytesReader(w, r.Body, config.Server.MaxMediaSize)
 	session := request.GetSession(r)
 
-	if request.RequireContentType(ValidContentType(), r) == false {
-		response.InvalidParameter(w, "Content-Type")
+	file, handler, err := r.FormFile("file")
+	if err != nil {
+		response.InvalidParameter(w, "body")
+		fmt.Println(err.Error())
 		return
 	}
+	defer file.Close()
 
 	media := &models.Media{
-		Name:     r.Header.Get(MediaNameHeaderName),
+		Name:     handler.Filename,
 		ObjectID: uuid.New().String(),
 		Type:     r.Header.Get("Content-Type"),
 		OwnerID:  session.UserID,
 	}
 
-	objectWriter, err := storage.Remote.WriteObject(r.Body, media.GetMediaPath())
+	objectWriter, err := storage.Remote.WriteObject(file, media.GetMediaPath())
 	if err != nil {
 		log.Warn().Err(err).Msg("Error while creating object writer")
 		response.InternalError(w)
