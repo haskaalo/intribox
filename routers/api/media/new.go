@@ -1,7 +1,6 @@
 package media
 
 import (
-	"fmt"
 	"net/http"
 	"path/filepath"
 	"strings"
@@ -22,7 +21,6 @@ func postNew(w http.ResponseWriter, r *http.Request) {
 	file, handler, err := r.FormFile("file")
 	if err != nil {
 		response.InvalidParameter(w, "body")
-		fmt.Println(err.Error())
 		return
 	}
 	defer file.Close()
@@ -41,7 +39,7 @@ func postNew(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	exist, err := models.MediaHashExist(session.UserID, media.FileHash)
+	exist, err := models.MediaHashExist(session.UserID, objectWriter.SHA256())
 	if err != nil {
 		log.Warn().Err(err).Msg("Error while querying database")
 		objectWriter.Delete()
