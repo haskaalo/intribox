@@ -10,5 +10,4 @@ lint:
 
 .PHONY: test
 test:
-	aws --endpoint-url=http://localhost:4566 s3 mb s3://testbucket
 	go test -cover github.com/haskaalo/intribox/...
