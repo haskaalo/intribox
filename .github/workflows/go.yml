@@ -23,6 +23,9 @@ jobs:
       
     - name: Set up testing environnment
       run: docker-compose -f docker-compose.dev.yml up -d
-      
+    
+    - name: Installing AWS CLI
+      run: sudo apt-get install awscli
+
     - name: Test
       run: make test
