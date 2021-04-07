@@ -25,6 +25,11 @@ func postNew(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
+	if handler.Filename == "" {
+		response.InvalidParameter(w, "filename")
+		return
+	}
+
 	media := &models.Media{
 		Name:     handler.Filename,
 		ObjectID: uuid.New().String(),

@@ -15,6 +15,17 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// createNewTestMultipart This creates a multipart/form-data to work with in tests
+func createNewTestMultipart(fileName string) (*bytes.Buffer, string) {
+	reqBody := new(bytes.Buffer)
+	writer := multipart.NewWriter(reqBody)
+	part, _ := writer.CreateFormFile("file", fileName)
+	part.Write([]byte("Pretend this is the binary data in the picture file"))
+	writer.Close()
+
+	return reqBody, writer.FormDataContentType()
+}
+
 func TestPostNew(t *testing.T) {
 	test.MockServerSetup()
 	defer test.MockServerTearDown()
@@ -33,17 +44,13 @@ func TestPostNew(t *testing.T) {
 
 	t.Run("Should upload new media with no error", func(t *testing.T) {
 		// Create custom multipart
-		reqBody := new(bytes.Buffer)
-		writer := multipart.NewWriter(reqBody)
-		part, err := writer.CreateFormFile("file", "Testing_picture.png")
-		part.Write([]byte("Pretend this is the binary data in the picture file"))
-		writer.Close()
+		reqBody, contentType := createNewTestMultipart("testimage.png")
 
 		// Prepare request
 		req, err := http.NewRequest("POST", test.Server.URL+"/new", reqBody)
 		assert.NoError(t, err, "Request should have no error")
 		req.Header.Add(models.SessionHeaderName, testUserSession.FullSessionToken)
-		req.Header.Add("Content-Type", writer.FormDataContentType())
+		req.Header.Add("Content-Type", contentType)
 
 		// Execute request
 		client := &http.Client{}
@@ -63,15 +70,18 @@ func TestPostNew(t *testing.T) {
 		media, err := models.GetMediaByID(int(resBody["id"].(float64)), user.ID)
 		assert.NoError(t, err)
 
-		assert.Equal(t, "Testing_picture.png", media.Name, "The picture should exist in the database")
+		assert.Equal(t, "testimage.png", media.Name, "The picture should exist in the database")
 		// TODO: Check if it exist in storage
 	})
 
-	t.Run("Should return invalid parameter if no media name is in the header", func(t *testing.T) {
-		req, err := http.NewRequest("POST", test.Server.URL+"/new", bytes.NewBuffer([]byte("Some sort of content")))
+	t.Run("Should return invalid parameter if no media name is in the body", func(t *testing.T) {
+		// Create custom multipart
+		reqBody, contentType := createNewTestMultipart("")
+
+		req, err := http.NewRequest("POST", test.Server.URL+"/new", reqBody)
 		assert.NoError(t, err, "Request should have no error")
 		req.Header.Add(models.SessionHeaderName, testUserSession.FullSessionToken)
-		req.Header.Add("Content-Type", "multipart/form-data")
+		req.Header.Add("Content-Type", contentType)
 		client := &http.Client{}
 		resp, err := client.Do(req)
 
@@ -79,13 +89,12 @@ func TestPostNew(t *testing.T) {
 		assert.Equal(t, http.StatusBadRequest, resp.StatusCode, "Expect status code to be 400")
 	})
 
-	t.Run("Should return invalid parameter if content-type doesn't match ValidContentType", func(t *testing.T) {
-		selector, validator, err := models.InitiateSession(user.ID)
-		assert.NoError(t, err)
+	t.Run("Should return invalid parameter if content-type doesn't match multipart/form-data", func(t *testing.T) {
+		reqBody, _ := createNewTestMultipart("")
 
-		req, err := http.NewRequest("POST", test.Server.URL+"/new", bytes.NewBuffer([]byte("Some sort of content")))
+		req, err := http.NewRequest("POST", test.Server.URL+"/new", reqBody)
 		assert.NoError(t, err, "Request should have no error")
-		req.Header.Add(models.SessionHeaderName, selector+"."+validator)
+		req.Header.Add(models.SessionHeaderName, testUserSession.FullSessionToken)
 		req.Header.Add("Content-Type", "application/json")
 
 		client := &http.Client{}
