@@ -22,5 +22,5 @@ func main() {
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
-	srv.ListenAndServe()
+	_ = srv.ListenAndServe()
 }

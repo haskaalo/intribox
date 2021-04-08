@@ -16,7 +16,6 @@ func GetSession(r *http.Request) *models.Session {
 		return nil
 	}
 
-	sess := new(models.Session)
 	sess, ok := rv.(*models.Session)
 	if !ok {
 		return nil

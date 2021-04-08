@@ -20,7 +20,7 @@ func createNewTestMultipart(fileName string) (*bytes.Buffer, string) {
 	reqBody := new(bytes.Buffer)
 	writer := multipart.NewWriter(reqBody)
 	part, _ := writer.CreateFormFile("file", fileName)
-	part.Write([]byte("Pretend this is the binary data in the picture file"))
+	_, _ = part.Write([]byte("Pretend this is the binary data in the picture file"))
 	writer.Close()
 
 	return reqBody, writer.FormDataContentType()

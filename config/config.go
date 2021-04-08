@@ -115,12 +115,12 @@ func init() {
 	Aws.Region = cfg.Section("S3").Key("region").MustString("us-east1")
 	Aws.AccessKey = cfg.Section("S3").Key("accesskey").MustString("anything_test")
 	Aws.SecretKey = cfg.Section("S3").Key("secretkey").MustString("anything_test")
-	AwsSession = session.New(&aws.Config{
+	AwsSession, _ = session.NewSession(&aws.Config{
 		Credentials: credentials.NewStaticCredentials(Aws.AccessKey, Aws.SecretKey, ""),
 		Endpoint:    aws.String(Aws.Endpoint),
 		Region:      aws.String(Aws.Region),
 	})
-	if Debug == true { // When creating a local S3 bucket with localstack, it use localhost so <bucketname>.localhost/<key> doesn't exist, but localhost/<key> does.
+	if Debug { // When creating a local S3 bucket with localstack, it use localhost so <bucketname>.localhost/<key> doesn't exist, but localhost/<key> does.
 		AwsSession.Config = AwsSession.Config.WithS3ForcePathStyle(true)
 	}
 }

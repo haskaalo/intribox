@@ -68,7 +68,7 @@ func TestGetMediaURL(t *testing.T) {
 	})
 
 	t.Run("Should return 404 if the visual media doesn't exist", func(t *testing.T) {
-		jsonGetURLParams, err := json.Marshal(&getMediaURLParams{
+		jsonGetURLParams, _ := json.Marshal(&getMediaURLParams{
 			MediaID: 420000, // This media ID doesn't exist in testing database
 		})
 

@@ -56,7 +56,9 @@ func TestLogInUser(t *testing.T) {
 	assert.NoError(t, err)
 
 	t.Run("Should successfully login an user", func(t *testing.T) {
-		defer DeleteAllUsers()
+		defer func() {
+			_ = DeleteAllUsers()
+		}()
 		testUser, err := CreateTestUser()
 		assert.NoError(t, err)
 
@@ -66,7 +68,9 @@ func TestLogInUser(t *testing.T) {
 	})
 
 	t.Run("Should return ErrRecordNotFound if password doesn't match but email does", func(t *testing.T) {
-		defer DeleteAllUsers()
+		defer func() {
+			_ = DeleteAllUsers()
+		}()
 		testUser, err := CreateTestUser()
 		assert.NoError(t, err)
 
@@ -76,7 +80,9 @@ func TestLogInUser(t *testing.T) {
 	})
 
 	t.Run("Should return ErrRecordNotFound if email doesn't exist", func(t *testing.T) {
-		defer DeleteAllUsers()
+		defer func() {
+			_ = DeleteAllUsers()
+		}()
 		_, err := CreateTestUser()
 		assert.NoError(t, err)
 

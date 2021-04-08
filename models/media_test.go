@@ -10,6 +10,7 @@ import (
 func TestInsertNewMedia(t *testing.T) {
 	err := DeleteAllUsers()
 	assert.NoError(t, err)
+
 	err = DeleteAllMedias()
 	assert.NoError(t, err)
 
@@ -34,6 +35,7 @@ func TestInsertNewMedia(t *testing.T) {
 func TestMediaHashExist(t *testing.T) {
 	err := DeleteAllUsers()
 	assert.NoError(t, err)
+
 	err = DeleteAllMedias()
 	assert.NoError(t, err)
 
@@ -68,6 +70,7 @@ func TestMediaHashExist(t *testing.T) {
 func TestGetMediaByID(t *testing.T) {
 	err := DeleteAllUsers()
 	assert.NoError(t, err)
+
 	err = DeleteAllMedias()
 	assert.NoError(t, err)
 

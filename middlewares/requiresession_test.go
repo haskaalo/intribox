@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -15,7 +14,7 @@ import (
 
 func echoUser(w http.ResponseWriter, r *http.Request) {
 	data := request.GetSession(r)
-	fmt.Fprintf(w, strconv.Itoa(data.UserID))
+	_, _ = w.Write([]byte(strconv.Itoa(data.UserID)))
 }
 
 func TestRequireSession(t *testing.T) {

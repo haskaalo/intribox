@@ -17,7 +17,7 @@ func (*R) RemoveObject(path string) error {
 }
 
 // ReadObject from local
-func (*R) readObject(path string) (io.Reader, error) {
+func (*R) ReadObject(path string) (io.Reader, error) {
 	fullPath := config.Storage.UserDataPath + "/" + path
 
 	file, err := os.OpenFile(filepath.Dir(fullPath), os.O_RDONLY, 0755)

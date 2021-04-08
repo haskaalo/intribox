@@ -40,5 +40,5 @@ func InitTemplates() {
 
 // Render render template html
 func Render(w http.ResponseWriter, data RenderData) {
-	templates.ExecuteTemplate(w, "indexPage", data)
+	_ = templates.ExecuteTemplate(w, "indexPage", data)
 }

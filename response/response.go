@@ -12,5 +12,5 @@ type M map[string]interface{}
 func Respond(w http.ResponseWriter, in interface{}, status int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(in)
+	_ = json.NewEncoder(w).Encode(in)
 }

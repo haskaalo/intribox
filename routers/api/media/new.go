@@ -2,8 +2,6 @@ package media
 
 import (
 	"net/http"
-	"path/filepath"
-	"strings"
 
 	"github.com/google/uuid"
 	"github.com/haskaalo/intribox/config"
@@ -47,11 +45,15 @@ func postNew(w http.ResponseWriter, r *http.Request) {
 	exist, err := models.MediaHashExist(session.UserID, objectWriter.SHA256())
 	if err != nil {
 		log.Warn().Err(err).Msg("Error while querying database")
-		objectWriter.Delete()
+		if objectWriter.Delete() != nil {
+			log.Fatal().Err(err).Msg("Couldn't delete object")
+		}
 		response.InternalError(w)
 		return
-	} else if exist == true {
-		objectWriter.Delete()
+	} else if exist {
+		if objectWriter.Delete() != nil {
+			log.Fatal().Err(err).Msg("Couldn't delete object")
+		}
 		response.Conflict(w)
 		return
 	}
@@ -75,8 +77,4 @@ func postNew(w http.ResponseWriter, r *http.Request) {
 	response.Respond(w, &response.M{
 		"id": mediaid,
 	}, 200)
-}
-
-func fileNameNoExt(filename string) string {
-	return strings.TrimSuffix(filename, filepath.Ext(filename))
 }
