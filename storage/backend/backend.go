@@ -9,7 +9,9 @@ type Backend interface {
 
 	RemoveObject(path string) error
 
-	GetReadObjectURL(path string) (string, error)
+	GetReadObjectURL(path string, MediaID int) (string, error)
+
+	ReadObject(path string) (io.Reader, error)
 }
 
 // ObjectAction Upload prepared (tmp) file to storage

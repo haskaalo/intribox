@@ -4,6 +4,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/haskaalo/intribox/config"
 )
@@ -27,7 +28,7 @@ func (*R) ReadObject(path string) (io.Reader, error) {
 	return file, nil
 }
 
-// GetReadObjectURL Return an path similar to models.GetMediaPath (e.g.: localhost:8080/api/storage/2/media/61230e8e-896d-4380-b00e-64364e79cad5)
-func (*R) GetReadObjectURL(path string) (string, error) {
-	return (config.Server.Hostname + "/api/storage" + path), nil
+// GetReadObjectURL Return an path similar to models.GetMediaPath (e.g.: localhost:8080/api/media/download?mediaid=34567855)
+func (*R) GetReadObjectURL(path string, mediaID int) (string, error) {
+	return (config.Server.Hostname + "/api/media/download?mediaid=" + strconv.Itoa(mediaID)), nil
 }

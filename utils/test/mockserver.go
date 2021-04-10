@@ -4,6 +4,7 @@ import (
 	"net/http/httptest"
 
 	"github.com/gorilla/mux"
+	"github.com/haskaalo/intribox/config"
 )
 
 var (
@@ -18,6 +19,7 @@ var (
 func MockServerSetup() {
 	Router = mux.NewRouter()
 	Server = httptest.NewServer(Router)
+	config.Server.Hostname = Server.URL
 }
 
 // MockServerTearDown Close test server

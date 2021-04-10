@@ -3,6 +3,7 @@ package local
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"io"
 	"os"
 	"path/filepath"
@@ -49,13 +50,16 @@ func (*R) WriteObject(in io.Reader, path string) (backend.ObjectAction, error) {
 }
 
 func (w *localWriter) Delete() error {
+	if w.tmpfile == nil {
+		return errors.New("TODO: This should be implemented")
+	}
 	return os.Remove(w.tmpfile.Name())
 }
 
-func (w localWriter) SHA256() string {
+func (w *localWriter) SHA256() string {
 	return w.sha256
 }
 
-func (w localWriter) Size() int64 {
+func (w *localWriter) Size() int64 {
 	return w.size
 }

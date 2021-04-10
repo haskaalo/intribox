@@ -50,3 +50,10 @@ func Conflict(w http.ResponseWriter) {
 		Message: "Conflict: Resource already exist",
 	}, http.StatusConflict)
 }
+
+func NotImplemented(w http.ResponseWriter) {
+	Respond(w, &basicError{
+		Status:  501,
+		Message: "Not implemented",
+	}, http.StatusNotImplemented)
+}

@@ -39,7 +39,7 @@ func getMediaURL(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	mediaObjectURL, err := storage.Remote.GetReadObjectURL(media.GetMediaPath())
+	mediaObjectURL, err := storage.Remote.GetReadObjectURL(media.GetMediaPath(), params.MediaID)
 	if err != nil {
 		log.Warn().Err(err).Msg("Failed to GetReadObjectURL from remote")
 		response.InternalError(w)

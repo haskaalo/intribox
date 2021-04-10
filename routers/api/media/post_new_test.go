@@ -11,19 +11,25 @@ import (
 	"github.com/haskaalo/intribox/middlewares"
 	"github.com/haskaalo/intribox/models"
 	"github.com/haskaalo/intribox/response"
+	"github.com/haskaalo/intribox/utils"
 	"github.com/haskaalo/intribox/utils/test"
 	"github.com/stretchr/testify/assert"
 )
 
 // createNewTestMultipart This creates a multipart/form-data to work with in tests
-func createNewTestMultipart(fileName string) (*bytes.Buffer, string) {
+func createNewTestMultipart(fileName string, contentType string) (*bytes.Buffer, string, string) {
 	reqBody := new(bytes.Buffer)
 	writer := multipart.NewWriter(reqBody)
 	part, _ := writer.CreateFormFile("file", fileName)
-	_, _ = part.Write([]byte("Pretend this is the binary data in the picture file"))
+
+	body := utils.RandString(500) // Pretend this is the binary data in the picture file
+	_, _ = part.Write([]byte(body))
+
+	_ = writer.WriteField("content-type", contentType)
 	writer.Close()
 
-	return reqBody, writer.FormDataContentType()
+	sha256 := utils.SHA1([]byte(body))
+	return reqBody, writer.FormDataContentType(), sha256
 }
 
 func TestPostNew(t *testing.T) {
@@ -44,7 +50,7 @@ func TestPostNew(t *testing.T) {
 
 	t.Run("Should upload new media with no error", func(t *testing.T) {
 		// Create custom multipart
-		reqBody, contentType := createNewTestMultipart("testimage.png")
+		reqBody, contentType, _ := createNewTestMultipart("testimage.png", "image/png")
 
 		// Prepare request
 		req, err := http.NewRequest("POST", test.Server.URL+"/new", reqBody)
@@ -76,7 +82,7 @@ func TestPostNew(t *testing.T) {
 
 	t.Run("Should return invalid parameter if no media name is in the body", func(t *testing.T) {
 		// Create custom multipart
-		reqBody, contentType := createNewTestMultipart("")
+		reqBody, contentType, _ := createNewTestMultipart("", "video/mp4")
 
 		req, err := http.NewRequest("POST", test.Server.URL+"/new", reqBody)
 		assert.NoError(t, err, "Request should have no error")
@@ -90,7 +96,7 @@ func TestPostNew(t *testing.T) {
 	})
 
 	t.Run("Should return invalid parameter if content-type doesn't match multipart/form-data", func(t *testing.T) {
-		reqBody, _ := createNewTestMultipart("")
+		reqBody, _, _ := createNewTestMultipart("", "video/mp4")
 
 		req, err := http.NewRequest("POST", test.Server.URL+"/new", reqBody)
 		assert.NoError(t, err, "Request should have no error")
@@ -101,6 +107,20 @@ func TestPostNew(t *testing.T) {
 		resp, err := client.Do(req)
 
 		assert.NoError(t, err, "HTTP Post should have no error")
+		assert.Equal(t, http.StatusBadRequest, resp.StatusCode, "Expect status code to be 400")
+	})
+
+	t.Run("Should return invalid parameter if content-type field isn't an image or video", func(t *testing.T) {
+		reqBody, multipartType, _ := createNewTestMultipart("", "video/mp4")
+
+		req, err := http.NewRequest("POST", test.Server.URL+"/new", reqBody)
+		assert.NoError(t, err, "Request should have no error")
+		req.Header.Add(models.SessionHeaderName, testUserSession.FullSessionToken)
+		req.Header.Add("Content-Type", multipartType)
+
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		assert.NoError(t, err)
 		assert.Equal(t, http.StatusBadRequest, resp.StatusCode, "Expect status code to be 400")
 	})
 }

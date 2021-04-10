@@ -2,6 +2,7 @@ package media
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/haskaalo/intribox/config"
@@ -11,6 +12,25 @@ import (
 	"github.com/haskaalo/intribox/storage"
 	"github.com/rs/zerolog/log"
 )
+
+type postNewResponse struct {
+	ID int `json:"id"`
+}
+
+func validNewFileContentType(contentType string) bool {
+	s := strings.Split(contentType, "/")
+	if len(s) == 0 {
+		return false
+	} else if len(s) != 2 {
+		return false
+	}
+
+	if s[0] == "image" || s[0] == "video" {
+		return true
+	}
+
+	return false
+}
 
 func postNew(w http.ResponseWriter, r *http.Request) {
 	r.Body = http.MaxBytesReader(w, r.Body, config.Server.MaxMediaSize)
@@ -23,7 +43,8 @@ func postNew(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	if handler.Filename == "" {
+	contentType := r.FormValue("content-type")
+	if !validNewFileContentType(contentType) {
 		response.InvalidParameter(w, "filename")
 		return
 	}
@@ -31,7 +52,7 @@ func postNew(w http.ResponseWriter, r *http.Request) {
 	media := &models.Media{
 		Name:     handler.Filename,
 		ObjectID: uuid.New().String(),
-		Type:     r.Header.Get("Content-Type"),
+		Type:     contentType,
 		OwnerID:  session.UserID,
 	}
 
@@ -74,7 +95,7 @@ func postNew(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response.Respond(w, &response.M{
-		"id": mediaid,
+	response.Respond(w, &postNewResponse{
+		ID: mediaid,
 	}, 200)
 }

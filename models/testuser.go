@@ -1,5 +1,7 @@
 package models
 
+import "github.com/haskaalo/intribox/utils"
+
 // TestUserPassword Password used for CreateTestUser
 var TestUserPassword = "137945"
 
@@ -10,11 +12,11 @@ type TestingUserSession struct {
 	FullSessionToken string
 }
 
-// CreateTestUser Create a test user
+// CreateTestUser Create a test user (delete )
 func CreateTestUser() (*User, error) {
 	user := &User{
-		Email:    "test@example.com",
-		Password: []byte("$2y$12$LXAwwYDwaHY7dR/LM8QzIOWE.nqbJ7wor/u7KZBrh3e6wnlqZsn66"),
+		Email:    utils.RandString(5) + "@example.com",
+		Password: []byte("$2y$12$LXAwwYDwaHY7dR/LM8QzIOWE.nqbJ7wor/u7KZBrh3e6wnlqZsn66"), // The password is: 137945 hehe,
 	}
 
 	err := user.InsertNewUser()
@@ -22,7 +24,7 @@ func CreateTestUser() (*User, error) {
 		return nil, err
 	}
 
-	usr, err := GetUserByEmail("test@example.com")
+	usr, err := GetUserByEmail(user.Email)
 	return usr, err
 }
 
