@@ -19,6 +19,7 @@ type getMediaURLResponse struct {
 	URL string `json:"url"`
 }
 
+// This returns the CDN/Download url
 func getMediaURL(w http.ResponseWriter, r *http.Request) {
 	userSession := request.GetSession(r)
 	params := new(getMediaURLParams)
