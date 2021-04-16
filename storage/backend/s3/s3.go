@@ -7,6 +7,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/google/uuid"
 	"github.com/haskaalo/intribox/config"
 )
 
@@ -30,7 +31,7 @@ func (*R) RemoveObject(path string) error {
 }
 
 // GetReadObjectURL return a presigned URL so users can download file directly from S3 without reaching our server, thus resulting less bandwidth usage
-func (*R) GetReadObjectURL(path string, MediaID int) (string, error) {
+func (*R) GetReadObjectURL(path string, MediaID uuid.UUID) (string, error) {
 	req, _ := s3Client.GetObjectRequest(&s3.GetObjectInput{
 		Bucket: aws.String(config.Aws.Bucket),
 		Key:    aws.String(path),

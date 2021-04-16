@@ -3,8 +3,8 @@ package media
 import (
 	"io"
 	"net/http"
-	"strconv"
 
+	"github.com/google/uuid"
 	"github.com/haskaalo/intribox/config"
 	"github.com/haskaalo/intribox/models"
 	"github.com/haskaalo/intribox/request"
@@ -18,16 +18,18 @@ func getDownload(w http.ResponseWriter, r *http.Request) {
 		response.NotImplemented(w)
 		return
 	}
-	mediaIDStr := r.URL.Query().Get("mediaid")
+	mediaIDStr := r.URL.Query().Get("id")
 	if mediaIDStr == "" {
-		response.InvalidParameter(w, "mediaid")
+		response.InvalidParameter(w, "id")
 		return
 	}
-	mediaID, err := strconv.Atoi(mediaIDStr)
+
+	mediaID, err := uuid.Parse(mediaIDStr)
 	if err != nil {
-		response.InvalidParameter(w, "mediaid")
+		response.InvalidParameter(w, "id")
 		return
 	}
+
 	userSession := request.GetSession(r)
 
 	media, err := models.GetMediaByID(mediaID, userSession.UserID)

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -18,8 +19,7 @@ func (m MediaType) Value() (driver.Value, error) {
 
 // Media SQL Table
 type Media struct {
-	ID           string    `json:"id" db:"id"`
-	ObjectID     string    `json:"objectid" db:"objectid"`
+	ID           uuid.UUID `json:"id" db:"id" pg:",pk,type:uuid default uuid_generate_v4()"`
 	Name         string    `json:"name" db:"name"`
 	Type         string    `json:"type" db:"type"`
 	OwnerID      int       `json:"ownerid" db:"ownerid"`
@@ -29,14 +29,14 @@ type Media struct {
 }
 
 // InsertNewMedia Insert a new media file
-func (s *Media) InsertNewMedia() (mediaid int, err error) {
+func (s *Media) InsertNewMedia() (id uuid.UUID, err error) {
 	return s.insertNewMedia(db)
 }
 
-func (s *Media) insertNewMedia(q sqlx.Ext) (int, error) {
-	var id int
-	query := `INSERT INTO media (name, type, objectid, ownerid, filehash, size) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`
-	err := sqlx.Get(q, &id, query, s.Name, s.Type, s.ObjectID, s.OwnerID, s.FileHash, s.Size)
+func (s *Media) insertNewMedia(q sqlx.Ext) (uuid.UUID, error) {
+	var id uuid.UUID
+	query := `INSERT INTO media (id, name, type, ownerid, filehash, size) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`
+	err := sqlx.Get(q, &id, query, s.ID, s.Name, s.Type, s.OwnerID, s.FileHash, s.Size)
 
 	return id, knownDatabaseError(err)
 }
@@ -55,21 +55,21 @@ func mediaHashExist(q sqlx.Ext, ownerid int, hash string) (bool, error) {
 }
 
 // GetMediaByID Select a media file with a ID
-func GetMediaByID(mediaid int, ownerid int) (*Media, error) {
+func GetMediaByID(mediaid uuid.UUID, ownerid int) (*Media, error) {
 	return getMediaByID(db, mediaid, ownerid)
 }
 
-func getMediaByID(q sqlx.Ext, mediaid int, ownerid int) (*Media, error) {
+func getMediaByID(q sqlx.Ext, id uuid.UUID, ownerid int) (*Media, error) {
 	media := new(Media)
 	query := `SELECT * FROM media WHERE id=$1 AND ownerid=$2`
-	err := sqlx.Get(q, media, query, mediaid, ownerid)
+	err := sqlx.Get(q, media, query, id, ownerid)
 
 	return media, knownDatabaseError(err)
 }
 
-// GetMediaPath Get media file path based on ownerID and objectID
+// GetMediaPath Get media file path based on ownerID and ID
 func (s *Media) GetMediaPath() string {
-	return fmt.Sprintf("%o/media/%s", s.OwnerID, s.ObjectID)
+	return fmt.Sprintf("%o/media/%s", s.OwnerID, s.ID.String())
 }
 
 // DeleteAllMedias Only should be used for testing (TODO: Obviously doesn't belong here)

@@ -14,7 +14,7 @@ import (
 )
 
 type postNewResponse struct {
-	ID int `json:"id"`
+	ID string `json:"id"`
 }
 
 func validNewFileContentType(contentType string) bool {
@@ -45,15 +45,15 @@ func postNew(w http.ResponseWriter, r *http.Request) {
 
 	contentType := r.FormValue("content-type")
 	if !validNewFileContentType(contentType) {
-		response.InvalidParameter(w, "filename")
+		response.InvalidParameter(w, "content-type")
 		return
 	}
 
 	media := &models.Media{
-		Name:     handler.Filename,
-		ObjectID: uuid.New().String(),
-		Type:     contentType,
-		OwnerID:  session.UserID,
+		ID:      uuid.New(),
+		Name:    handler.Filename,
+		Type:    contentType,
+		OwnerID: session.UserID,
 	}
 
 	objectWriter, err := storage.Remote.WriteObject(file, media.GetMediaPath())
@@ -96,6 +96,6 @@ func postNew(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.Respond(w, &postNewResponse{
-		ID: mediaid,
+		ID: mediaid.String(),
 	}, 200)
 }

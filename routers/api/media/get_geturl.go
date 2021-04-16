@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/haskaalo/intribox/models"
 	"github.com/haskaalo/intribox/request"
 	"github.com/haskaalo/intribox/response"
@@ -12,7 +13,7 @@ import (
 )
 
 type getMediaURLParams struct {
-	MediaID int `json:"mediaid"`
+	ID string `json:"id"`
 }
 
 type getMediaURLResponse struct {
@@ -29,7 +30,11 @@ func getMediaURL(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	media, err := models.GetMediaByID(params.MediaID, userSession.UserID)
+	mediaID, err := uuid.Parse(params.ID)
+	if err != nil {
+		response.InvalidParameter(w, "id")
+	}
+	media, err := models.GetMediaByID(mediaID, userSession.UserID)
 	if err == models.ErrRecordNotFound {
 		response.NotFound(w)
 		return
@@ -39,7 +44,7 @@ func getMediaURL(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	mediaObjectURL, err := storage.Remote.GetReadObjectURL(media.GetMediaPath(), params.MediaID)
+	mediaObjectURL, err := storage.Remote.GetReadObjectURL(media.GetMediaPath(), media.ID)
 	if err != nil {
 		log.Warn().Err(err).Msg("Failed to GetReadObjectURL from remote")
 		response.InternalError(w)

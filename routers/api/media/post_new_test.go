@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/haskaalo/intribox/middlewares"
 	"github.com/haskaalo/intribox/models"
 	"github.com/haskaalo/intribox/response"
@@ -73,7 +74,10 @@ func TestPostNew(t *testing.T) {
 		err = json.Unmarshal(body, &resBody)
 		assert.NoError(t, err)
 
-		media, err := models.GetMediaByID(int(resBody["id"].(float64)), user.ID)
+		bodyID, err := uuid.Parse(resBody["id"].(string))
+		assert.NoError(t, err, "ID must have no error when parsing into uuid type")
+
+		media, err := models.GetMediaByID(bodyID, user.ID)
 		assert.NoError(t, err)
 
 		assert.Equal(t, "testimage.png", media.Name, "The picture should exist in the database")

@@ -18,8 +18,8 @@ func TestInsertNewMedia(t *testing.T) {
 	assert.NoError(t, err)
 
 	mediaTest := &Media{
+		ID:       uuid.New(),
 		Name:     "Testing Picture.png",
-		ObjectID: uuid.New().String(),
 		Type:     "image/png",
 		OwnerID:  testUser.ID,
 		FileHash: "0a4a712e4dceafd5b96b2ddb6372cd19ef94a6ab79a04a210682f73ba763dd14",
@@ -43,8 +43,8 @@ func TestMediaHashExist(t *testing.T) {
 	assert.NoError(t, err)
 
 	mediaTest := &Media{
+		ID:       uuid.New(),
 		Name:     "Testing Picture.png",
-		ObjectID: uuid.New().String(),
 		Type:     "image/png",
 		OwnerID:  testUser.ID,
 		FileHash: "0a4a712e4dceafd5b96b2ddb6372cd19ef94a6ab79a04a210682f73ba763dd14",
@@ -78,8 +78,8 @@ func TestGetMediaByID(t *testing.T) {
 	assert.NoError(t, err)
 
 	mediaTest := &Media{
+		ID:       uuid.New(),
 		Name:     "Darude sandstorm",
-		ObjectID: uuid.New().String(),
 		Type:     "image/png",
 		OwnerID:  testUser.ID,
 		FileHash: "0a4a712e4dceafd5b96b2ddb6372cd19ef94a6ab79a04a210682f73ba763dd14",
@@ -92,7 +92,7 @@ func TestGetMediaByID(t *testing.T) {
 
 		mediaInDatabase, err := GetMediaByID(mediaid, mediaTest.OwnerID)
 		assert.NoError(t, err, "Calling GetMediaByID should have no error")
-		assert.Equal(t, mediaInDatabase.ObjectID, mediaTest.ObjectID)
+		assert.Equal(t, mediaInDatabase.ID, mediaTest.ID)
 		assert.Equal(t, mediaInDatabase.FileHash, mediaTest.FileHash)
 	})
 
@@ -102,7 +102,7 @@ func TestGetMediaByID(t *testing.T) {
 		_, err = mediaTest.InsertNewMedia()
 		assert.NoError(t, err)
 
-		mediaInDatabase, err := GetMediaByID(1234563, mediaTest.OwnerID)
+		mediaInDatabase, err := GetMediaByID(uuid.MustParse("47a4c648-6d15-4d8b-8be6-49e55219b89d"), mediaTest.OwnerID)
 		assert.Equal(t, &Media{}, mediaInDatabase, "Returned media should be nil in that case")
 		assert.EqualError(t, err, ErrRecordNotFound.Error(), "Returned error should be \"Record not found\"")
 	})

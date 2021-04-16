@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"strconv"
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/haskaalo/intribox/config"
 	"github.com/haskaalo/intribox/middlewares"
 	"github.com/haskaalo/intribox/models"
@@ -16,7 +16,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func testPostTestingImage(url string, testSession *models.TestingUserSession, t *testing.T) int {
+func testPostTestingImage(url string, testSession *models.TestingUserSession, t *testing.T) uuid.UUID {
 	// Create custom multipart
 	reqBody, contentType, _ := createNewTestMultipart("testimage.png", "image/png")
 
@@ -41,7 +41,10 @@ func testPostTestingImage(url string, testSession *models.TestingUserSession, t 
 	err = json.Unmarshal(body, &resBody)
 	assert.NoError(t, err)
 
-	return resBody.ID
+	idUUID, err := uuid.Parse(resBody.ID)
+	assert.NoError(t, err, "uuid must successfully be parsed")
+
+	return idUUID
 }
 
 func TestGetDownload(t *testing.T) {
@@ -81,7 +84,7 @@ func TestGetDownload(t *testing.T) {
 		mediaID := testPostTestingImage(newTestingURL, testSession, t)
 
 		// Prepare request
-		req, err := http.NewRequest("GET", downloadTestingURL+"?mediaid="+strconv.Itoa(mediaID), nil)
+		req, err := http.NewRequest("GET", downloadTestingURL+"?id="+mediaID.String(), nil)
 		assert.NoError(t, err, "Request should have no error")
 		req.Header.Add(models.SessionHeaderName, testSession.FullSessionToken)
 
@@ -95,7 +98,7 @@ func TestGetDownload(t *testing.T) {
 
 	t.Run("Should return 404 for an unknown picture/video", func(t *testing.T) {
 		// Prepare request
-		req, err := http.NewRequest("GET", downloadTestingURL+"?mediaid=78236478", nil)
+		req, err := http.NewRequest("GET", downloadTestingURL+"?id=c04a1ea2-4fd0-4373-b7b4-782d94a5d88f", nil)
 		assert.NoError(t, err, "Request should have no error")
 		req.Header.Add(models.SessionHeaderName, testSession.FullSessionToken)
 
@@ -104,6 +107,22 @@ func TestGetDownload(t *testing.T) {
 		resp, err := client.Do(req)
 		assert.NoError(t, err, "HTTP Get should have no error")
 
-		assert.Equal(t, http.StatusNotFound, resp.StatusCode, "Status should be 404")
+		body, _ := ioutil.ReadAll(resp.Body)
+		assert.Equal(t, http.StatusNotFound, resp.StatusCode, "Status should be 404", "This is the body: ", string(body))
+	})
+
+	t.Run("Should return 400 when no ID is in url query", func(t *testing.T) {
+		// Prepare request
+		req, err := http.NewRequest("GET", downloadTestingURL, nil)
+		assert.NoError(t, err, "Request should have no error")
+		req.Header.Add(models.SessionHeaderName, testSession.FullSessionToken)
+
+		// Do request
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		assert.NoError(t, err, "HTTP Get should have no error")
+
+		body, _ := ioutil.ReadAll(resp.Body)
+		assert.Equal(t, http.StatusBadRequest, resp.StatusCode, "Status should be 404", "This is the body: ", string(body))
 	})
 }

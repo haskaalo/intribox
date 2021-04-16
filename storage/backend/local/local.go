@@ -4,8 +4,8 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"strconv"
 
+	"github.com/google/uuid"
 	"github.com/haskaalo/intribox/config"
 )
 
@@ -29,6 +29,6 @@ func (*R) ReadObject(path string) (io.Reader, error) {
 }
 
 // GetReadObjectURL Return an path similar to models.GetMediaPath (e.g.: localhost:8080/api/media/download?mediaid=34567855)
-func (*R) GetReadObjectURL(path string, mediaID int) (string, error) {
-	return (config.Server.Hostname + "/api/media/download?mediaid=" + strconv.Itoa(mediaID)), nil
+func (*R) GetReadObjectURL(path string, mediaID uuid.UUID) (string, error) {
+	return (config.Server.Hostname + "/api/media/download?mediaid=" + mediaID.String()), nil
 }

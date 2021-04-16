@@ -1,6 +1,10 @@
 package backend
 
-import "io"
+import (
+	"io"
+
+	"github.com/google/uuid"
+)
 
 // Backend interface used by all storage system
 type Backend interface {
@@ -9,7 +13,7 @@ type Backend interface {
 
 	RemoveObject(path string) error
 
-	GetReadObjectURL(path string, MediaID int) (string, error)
+	GetReadObjectURL(path string, MediaID uuid.UUID) (string, error)
 
 	ReadObject(path string) (io.Reader, error)
 }

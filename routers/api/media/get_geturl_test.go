@@ -33,8 +33,8 @@ func TestGetMediaURL(t *testing.T) {
 	t.Run("Should return a valid media download url", func(t *testing.T) {
 		// Inserting a fake (testing) picture in database
 		fakeMedia := &models.Media{
+			ID:       uuid.New(),
 			Name:     "Testing Picture",
-			ObjectID: uuid.New().String(),
 			Type:     "image/png",
 			OwnerID:  user.ID,
 			FileHash: "ab43487f946e97f24100685cb1d167024eb9dce910c18686feecf814bccc1749",
@@ -44,7 +44,7 @@ func TestGetMediaURL(t *testing.T) {
 		fakeMediaID, err := fakeMedia.InsertNewMedia()
 		assert.NoError(t, err)
 		jsonGetURLParams, err := json.Marshal(&getMediaURLParams{
-			MediaID: fakeMediaID,
+			ID: fakeMediaID.String(),
 		})
 		assert.NoError(t, err)
 
@@ -69,7 +69,7 @@ func TestGetMediaURL(t *testing.T) {
 
 	t.Run("Should return 404 if the visual media doesn't exist", func(t *testing.T) {
 		jsonGetURLParams, _ := json.Marshal(&getMediaURLParams{
-			MediaID: 420000, // This media ID doesn't exist in testing database
+			ID: uuid.New().String(), // This media ID doesn't exist in testing database
 		})
 
 		httpRequest, err := http.NewRequest("GET", testingURL, bytes.NewReader(jsonGetURLParams))
