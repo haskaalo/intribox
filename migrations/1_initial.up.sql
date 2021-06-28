@@ -15,7 +15,7 @@ CREATE TABLE media (
 	name varchar(255) NOT NULL,
 	type TEXT NOT NULL,
 	ownerid INT REFERENCES users(id) ON DELETE CASCADE,
-	uploaded_time DATE NOT NULL DEFAULT NOW(),
+	uploaded_time TIMESTAMP NOT NULL DEFAULT NOW(),
 	filehash citext NOT NULL,
 	size BIGINT NOT NULL,
 	PRIMARY KEY (id)

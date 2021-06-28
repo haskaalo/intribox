@@ -13,6 +13,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+// This API Call is only used if remote is local
 func getDownload(w http.ResponseWriter, r *http.Request) {
 	if config.Storage.RemoteName != "local" {
 		response.NotImplemented(w)

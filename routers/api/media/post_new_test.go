@@ -29,7 +29,7 @@ func createNewTestMultipart(fileName string, contentType string) (*bytes.Buffer,
 	_ = writer.WriteField("content-type", contentType)
 	writer.Close()
 
-	sha256 := utils.SHA1([]byte(body))
+	sha256 := utils.SHA256([]byte(body))
 	return reqBody, writer.FormDataContentType(), sha256
 }
 

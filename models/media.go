@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/haskaalo/intribox/utils"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -35,8 +36,8 @@ func (s *Media) InsertNewMedia() (id uuid.UUID, err error) {
 
 func (s *Media) insertNewMedia(q sqlx.Ext) (uuid.UUID, error) {
 	var id uuid.UUID
-	query := `INSERT INTO media (id, name, type, ownerid, filehash, size) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`
-	err := sqlx.Get(q, &id, query, s.ID, s.Name, s.Type, s.OwnerID, s.FileHash, s.Size)
+	query := `INSERT INTO media (id, name, type, ownerid, filehash, size, uploaded_time) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`
+	err := sqlx.Get(q, &id, query, s.ID, s.Name, s.Type, s.OwnerID, s.FileHash, s.Size, s.UploadedTime)
 
 	return id, knownDatabaseError(err)
 }
@@ -76,4 +77,43 @@ func (s *Media) GetMediaPath() string {
 func DeleteAllMedias() error {
 	_, err := db.NamedExec("DELETE FROM media", map[string]interface{}{})
 	return err
+}
+
+func getListMedia(q sqlx.Ext, ownerid int, maxLength int, page int) (*[]Media, error) {
+	mediaList := new([]Media)
+	query := `SELECT * FROM media 
+			WHERE ownerid=$1 
+			ORDER BY uploaded_time DESC
+			OFFSET ($2 * ($3 - 1)) LIMIT $2`
+	err := sqlx.Select(q, mediaList, query, ownerid, maxLength, page)
+
+	return mediaList, knownDatabaseError(err)
+}
+
+func GetListMedia(ownerid int, maxLength int, page int) (*[]Media, error) {
+	return getListMedia(db, ownerid, maxLength, page)
+}
+
+// GenerateRandomMedia Obviously for testing purposes
+func GenerateRandomMedia(n int, ownerID int) []Media {
+	allMediaInDatabase := []Media{}
+	// Insert 25 random
+	for i := 0; i < n; i++ { //nolint
+		mediaTest := &Media{
+			ID:           uuid.New(),
+			Name:         utils.RandString(5),
+			Type:         "image/png",
+			OwnerID:      ownerID,
+			UploadedTime: time.Now().Add(time.Duration(5*i) * time.Minute),
+			FileHash:     utils.SHA256([]byte(utils.RandString(5))),
+			Size:         420,
+		}
+		allMediaInDatabase = append(allMediaInDatabase, *mediaTest)
+		_, err := mediaTest.InsertNewMedia()
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	return allMediaInDatabase
 }

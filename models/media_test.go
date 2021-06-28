@@ -107,3 +107,47 @@ func TestGetMediaByID(t *testing.T) {
 		assert.EqualError(t, err, ErrRecordNotFound.Error(), "Returned error should be \"Record not found\"")
 	})
 }
+
+func TestGetListMedia(t *testing.T) {
+	err := DeleteAllUsers()
+	assert.NoError(t, err)
+
+	err = DeleteAllMedias()
+	assert.NoError(t, err)
+
+	testUser, err := CreateTestUser()
+	assert.NoError(t, err)
+
+	allMediaInDatabase := GenerateRandomMedia(25, testUser.ID)
+
+	t.Run("Should return media with specified page, length and descending", func(t *testing.T) {
+		// Should have 4 pages (8, 8, 8, 1)
+		maxLength := 8
+
+		reassemBledMedias := []Media{}
+		medias1, err := GetListMedia(testUser.ID, maxLength, 1)
+		assert.NoError(t, err)
+		assert.Len(t, *medias1, 8, "Should return the first 8 items")
+		reassemBledMedias = append(reassemBledMedias, *medias1...)
+
+		medias2, err := GetListMedia(testUser.ID, maxLength, 2)
+		assert.NoError(t, err)
+		assert.Len(t, *medias1, 8, "Should return page 2 with 8 items")
+		reassemBledMedias = append(reassemBledMedias, *medias2...)
+
+		medias3, err := GetListMedia(testUser.ID, maxLength, 3)
+		assert.NoError(t, err)
+		assert.Len(t, *medias1, 8, "Should return page 2 with 8 items")
+		reassemBledMedias = append(reassemBledMedias, *medias3...)
+
+		medias4, err := GetListMedia(testUser.ID, maxLength, 4)
+		assert.NoError(t, err)
+		assert.Len(t, *medias4, 1, "Last page should only have 1 item")
+		reassemBledMedias = append(reassemBledMedias, *medias4...)
+
+		// Check if everything matches descending
+		for index, value := range reassemBledMedias {
+			assert.Equal(t, allMediaInDatabase[len(allMediaInDatabase)-index-1].Name, value.Name, "Media")
+		}
+	})
+}
