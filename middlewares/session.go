@@ -26,13 +26,13 @@ func SetSession(next http.Handler) http.Handler {
 			return
 		}
 
-		request.SetSession(session, r)
+		ctx := request.SetSession(session, r)
 		err = session.ResetTimeSession()
 		if err != nil {
 			response.InternalError(rw)
 			return
 		}
 
-		next.ServeHTTP(rw, r)
+		next.ServeHTTP(rw, r.WithContext(*ctx))
 	})
 }

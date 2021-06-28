@@ -1,17 +1,19 @@
 package request
 
 import (
+	"context"
 	"net/http"
 
-	"github.com/gorilla/context"
 	"github.com/haskaalo/intribox/models"
 )
 
-const privKeySession = 0
+type contextKey string
+
+const sessionKey = contextKey("session")
 
 // GetSession get session data
 func GetSession(r *http.Request) *models.Session {
-	rv := context.Get(r, privKeySession)
+	rv := r.Context().Value(sessionKey)
 	if rv == nil {
 		return nil
 	}
@@ -25,6 +27,7 @@ func GetSession(r *http.Request) *models.Session {
 }
 
 // SetSession Set session data on variable
-func SetSession(sess *models.Session, r *http.Request) {
-	context.Set(r, privKeySession, sess)
+func SetSession(sess *models.Session, r *http.Request) *context.Context {
+	ctx := context.WithValue(r.Context(), sessionKey, sess)
+	return &ctx
 }
