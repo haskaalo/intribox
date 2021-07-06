@@ -24,9 +24,6 @@ jobs:
     - name: Installing AWS CLI
       run: sudo apt-get install awscli
 
-    - name: Setup localstack
-      run: make setupaws
-
     - name: Test
       run: make test
   golangci:
