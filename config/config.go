@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/go-ini/ini"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -120,6 +121,14 @@ func init() {
 		Endpoint:    aws.String(Aws.Endpoint),
 		Region:      aws.String(Aws.Region),
 	})
+
+	if Debug {
+		session := s3.New(AwsSession)
+		_, _ = session.CreateBucket(&s3.CreateBucketInput{
+			Bucket: aws.String(Aws.Bucket),
+		})
+	}
+
 	if Debug { // When creating a local S3 bucket with localstack, it use localhost so <bucketname>.localhost/<key> doesn't exist, but localhost/<key> does.
 		AwsSession.Config = AwsSession.Config.WithS3ForcePathStyle(true)
 	}

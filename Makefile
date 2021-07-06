@@ -12,7 +12,3 @@ lint:
 .PHONY: test
 test:
 	go test -cover ./...
-
-.PHONY: setupaws
-setupaws: 
-	aws --endpoint-url http://localhost:9000 s3 mb s3://testbucket
