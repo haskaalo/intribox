@@ -24,6 +24,9 @@ jobs:
     - name: Installing AWS CLI
       run: sudo apt-get install awscli
 
+    - name: Setup s3 test bucket
+      run: make setupaws
+
     - name: Test
       run: make test
   golangci:
