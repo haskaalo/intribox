@@ -3,6 +3,7 @@ PACKAGES ?= $(shell $(GO) list github.com/haskaalo/intribox/... | grep -v /vendo
 export AWS_ACCESS_KEY_ID := DevAccessKey
 export AWS_SECRET_ACCESS_KEY = DevSecretKey
 export AWS_DEFAULT_REGION = us-east-1
+export CONFIG_PATH = $(PWD)/intribox_config.dev.ini
 
 .PHONY: lint
 lint:
