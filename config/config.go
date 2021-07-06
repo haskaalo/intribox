@@ -110,11 +110,11 @@ func init() {
 	Storage.UserDataPath = cfg.Section("Storage").Key("userdatapath").MustString(filepath.Join(dir, "/data"))
 	Storage.RemoteName = cfg.Section("Storage").Key("remotename").MustString("local")
 
-	Aws.Endpoint = cfg.Section("S3").Key("endpoint").MustString("http://127.0.0.1:4566") // Default value equal to the localstack test server
-	Aws.Bucket = cfg.Section("S3").Key("bucket").MustString("testbucket")                // Default value equal to the localstack test server
+	Aws.Endpoint = cfg.Section("S3").Key("endpoint").MustString("http://127.0.0.1:9000") // Default value equal to the s3 testing server
+	Aws.Bucket = cfg.Section("S3").Key("bucket").MustString("testbucket")                // Default value equal to the s3 testing server
 	Aws.Region = cfg.Section("S3").Key("region").MustString("us-east1")
-	Aws.AccessKey = cfg.Section("S3").Key("accesskey").MustString("anything_test")
-	Aws.SecretKey = cfg.Section("S3").Key("secretkey").MustString("anything_test")
+	Aws.AccessKey = cfg.Section("S3").Key("accesskey").MustString("DevAccessKey")
+	Aws.SecretKey = cfg.Section("S3").Key("secretkey").MustString("DevSecretKey")
 	AwsSession, _ = session.NewSession(&aws.Config{
 		Credentials: credentials.NewStaticCredentials(Aws.AccessKey, Aws.SecretKey, ""),
 		Endpoint:    aws.String(Aws.Endpoint),

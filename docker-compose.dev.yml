@@ -28,17 +28,18 @@ services:
     image: redis:alpine
     ports:
       - 6379:6379
-  localstack: # for s3 testing
-    container_name: localstack
-    image: localstack/localstack:latest
-    ports:
-      - 4563-4599:4563-4599
+  minio: # for s3 testing
+    container_name: minio
+    image: minio/minio
     environment:
-      - DATA_DIR=/tmp/localstack/data 
-      - SERVICES=s3
-    volumes:
-      - './.localstack:/tmp/localstack'
-      - '/var/run/docker.sock:/var/run/docker.sock'
+      MINIO_ACCESS_KEY: "DevAccessKey"
+      MINIO_SECRET_KEY: "DevSecretKey"
+      MINIO_REGION_NAME: "us-east1"
+      MINIO_BUCKET: "testbucket"
+    ports:
+      - "9000:9000"
+    command: minio server /data
+
 networks:
   app-network:
     driver: bridge
