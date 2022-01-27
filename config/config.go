@@ -130,6 +130,6 @@ func init() {
 	}
 
 	if Debug { // When creating a local S3 bucket with localstack, it use localhost so <bucketname>.localhost/<key> doesn't exist, but localhost/<key> does.
-		AwsSession.Config = AwsSession.Config.WithS3ForcePathStyle(true)
+		// AwsSession.Config = AwsSession.Config.WithS3ForcePathStyle(true)
 	}
 }
