@@ -8,7 +8,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/go-ini/ini"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -111,24 +110,16 @@ func init() {
 	Storage.UserDataPath = cfg.Section("Storage").Key("userdatapath").MustString(filepath.Join(dir, "/data"))
 	Storage.RemoteName = cfg.Section("Storage").Key("remotename").MustString("local")
 
-	Aws.Endpoint = cfg.Section("S3").Key("endpoint").MustString("http://127.0.0.1:4566") // Default value equal to the s3 testing server (localstack)
-	Aws.Bucket = cfg.Section("S3").Key("bucket").MustString("testbucket")                // Default value equal to the s3 testing server (localstack)
+	Aws.Endpoint = cfg.Section("S3").Key("endpoint").MustString("http://127.0.0.1:4566") // Default value equal to the localstack test server
+	Aws.Bucket = cfg.Section("S3").Key("bucket").MustString("testbucket")                // Default value equal to the localstack test server
 	Aws.Region = cfg.Section("S3").Key("region").MustString("us-east1")
-	Aws.AccessKey = cfg.Section("S3").Key("accesskey").MustString("DevAccessKey")
-	Aws.SecretKey = cfg.Section("S3").Key("secretkey").MustString("DevSecretKey")
+	Aws.AccessKey = cfg.Section("S3").Key("accesskey").MustString("anything_test")
+	Aws.SecretKey = cfg.Section("S3").Key("secretkey").MustString("anything_test")
 	AwsSession, _ = session.NewSession(&aws.Config{
 		Credentials: credentials.NewStaticCredentials(Aws.AccessKey, Aws.SecretKey, ""),
 		Endpoint:    aws.String(Aws.Endpoint),
 		Region:      aws.String(Aws.Region),
 	})
-
-	if Debug {
-		session := s3.New(AwsSession)
-		_, _ = session.CreateBucket(&s3.CreateBucketInput{
-			Bucket: aws.String(Aws.Bucket),
-		})
-	}
-
 	if Debug { // When creating a local S3 bucket with localstack, it use localhost so <bucketname>.localhost/<key> doesn't exist, but localhost/<key> does.
 		AwsSession.Config = AwsSession.Config.WithS3ForcePathStyle(true)
 	}
