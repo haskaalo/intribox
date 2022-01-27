@@ -79,6 +79,11 @@ func DeleteAllMedias() error {
 	return err
 }
 
+// GetListMedia Paginate a user media list ordered by uploaded time
+func GetListMedia(ownerid int, maxLength int, page int) (*[]Media, error) {
+	return getListMedia(db, ownerid, maxLength, page)
+}
+
 func getListMedia(q sqlx.Ext, ownerid int, maxLength int, page int) (*[]Media, error) {
 	mediaList := new([]Media)
 	query := `SELECT * FROM media 
@@ -88,10 +93,6 @@ func getListMedia(q sqlx.Ext, ownerid int, maxLength int, page int) (*[]Media, e
 	err := sqlx.Select(q, mediaList, query, ownerid, maxLength, page)
 
 	return mediaList, knownDatabaseError(err)
-}
-
-func GetListMedia(ownerid int, maxLength int, page int) (*[]Media, error) {
-	return getListMedia(db, ownerid, maxLength, page)
 }
 
 // GenerateRandomMedia Obviously for testing purposes
