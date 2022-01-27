@@ -111,8 +111,8 @@ func init() {
 	Storage.UserDataPath = cfg.Section("Storage").Key("userdatapath").MustString(filepath.Join(dir, "/data"))
 	Storage.RemoteName = cfg.Section("Storage").Key("remotename").MustString("local")
 
-	Aws.Endpoint = cfg.Section("S3").Key("endpoint").MustString("http://127.0.0.1:9000") // Default value equal to the s3 testing server
-	Aws.Bucket = cfg.Section("S3").Key("bucket").MustString("testbucket")                // Default value equal to the s3 testing server
+	Aws.Endpoint = cfg.Section("S3").Key("endpoint").MustString("http://127.0.0.1:4566") // Default value equal to the s3 testing server (localstack)
+	Aws.Bucket = cfg.Section("S3").Key("bucket").MustString("testbucket")                // Default value equal to the s3 testing server (localstack)
 	Aws.Region = cfg.Section("S3").Key("region").MustString("us-east1")
 	Aws.AccessKey = cfg.Section("S3").Key("accesskey").MustString("DevAccessKey")
 	Aws.SecretKey = cfg.Section("S3").Key("secretkey").MustString("DevSecretKey")
@@ -130,6 +130,6 @@ func init() {
 	}
 
 	if Debug { // When creating a local S3 bucket with localstack, it use localhost so <bucketname>.localhost/<key> doesn't exist, but localhost/<key> does.
-		// AwsSession.Config = AwsSession.Config.WithS3ForcePathStyle(true)
+		AwsSession.Config = AwsSession.Config.WithS3ForcePathStyle(true)
 	}
 }
