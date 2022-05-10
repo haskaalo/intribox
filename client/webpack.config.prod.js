@@ -1,8 +1,9 @@
 const { merge } = require('webpack-merge');
 const common = require('./webpack.config.common');
 const {DefinePlugin} = require('webpack');
-const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require("terser-webpack-plugin"); // Uglify
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+
 const buildconfig = {
     apiUrl: process.env.APIURL || "/api",
     isDev: false,
@@ -14,13 +15,10 @@ module.exports = merge(common, {
         publicPath: `/`
     },
     optimization: {
+        minimize: true,
         minimizer: [
-            new UglifyJSPlugin({
-                cache: true,
-                parallel: true,
-                sourceMap: false,
-            }),
-            new OptimizeCSSAssetsPlugin({})
+            new TerserPlugin(),
+            new CssMinimizerPlugin()
         ]
     },
     plugins: [

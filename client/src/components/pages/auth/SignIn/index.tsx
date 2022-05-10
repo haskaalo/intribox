@@ -29,49 +29,50 @@ class SignIn extends React.Component<IProps, IState> {
         this.handleInputChange = this.handleInputChange.bind(this);
     }
 
-    render() {
-        return <Container fluid={true}>
-            <Row>
-                <Form className="mx-auto text-center" onSubmit={this.handleFormSubmit}>
-                    <h1>IntriBox</h1>
-                    <FormGroup>
-                        <Input type="email" name="email" placeholder="E-mail"  bsSize="lg" value={this.state.input.email} onChange={this.handleInputChange} />
-                    </FormGroup>
-                    <FormGroup>
-                        <Input type="password" name="password" placeholder="Password" bsSize="lg" value={this.state.input.password} onChange={this.handleInputChange} />
-                    </FormGroup>
-                    <Button type="submit" color="primary" size="lg">Sign In</Button>
-                </Form>
-            </Row>
-        </Container>;
-    }
-
     private handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
-        const currentState = this.state.input;
-        currentState[event.target.name as keyof IState["input"]] = event.target.value;
+        const { input } = this.state;
 
-        this.setState({
-            input: currentState,
-        });
+        input[event.target.name as keyof IState["input"]] = event.target.value;
+        this.setState({input});
     }
 
     private async handleFormSubmit(event: React.FormEvent) {
         event.preventDefault();
+        const { input } = this.state;
+        const { UserAuth } = this.props;
 
-        const response = await LoginUser(this.state.input.email, this.state.input.password).catch((err: Error) => {
+        const response = await LoginUser(input.email, input.password).catch((err: Error) => {
             if (err.message === KnownError.NOT_FOUND) {
                 alert("User not found or password doesn't exist");
-                return;
+                
             } else {
                 alert(err.message);
-                return;
+                
             }
         });
 
         if (response) {
             localStorage.setItem("apiToken", response);
-            this.props.UserAuth(true);
+            UserAuth(true);
         }
+    }
+
+    render() {
+        const { input } = this.state;
+        return <Container fluid>
+            <Row>
+                <Form className="mx-auto text-center" onSubmit={this.handleFormSubmit}>
+                    <h1>IntriBox</h1>
+                    <FormGroup>
+                        <Input type="email" name="email" placeholder="E-mail"  bsSize="lg" value={input.email} onChange={this.handleInputChange} />
+                    </FormGroup>
+                    <FormGroup>
+                        <Input type="password" name="password" placeholder="Password" bsSize="lg" value={input.password} onChange={this.handleInputChange} />
+                    </FormGroup>
+                    <Button type="submit" color="primary" size="lg">Sign In</Button>
+                </Form>
+            </Row>
+        </Container>;
     }
 }
 

@@ -27,7 +27,7 @@ func InitTemplates() {
 	templates = template.Must(template.ParseGlob(config.Client.AssetsPath + "/html/*"))
 
 	// Reload templates every 3 seconds in case of change
-	// Must change
+	// TODO: Must change
 	if config.Debug {
 		go func() {
 			for {

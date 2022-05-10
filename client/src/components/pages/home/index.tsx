@@ -5,7 +5,7 @@ import NavbarHeader from "./navbarheader";
 
 class Home extends React.Component {
     render() {
-        return <Container fluid={true}>
+        return <Container fluid>
             <NavbarHeader/>
         </Container>;
     }

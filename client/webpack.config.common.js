@@ -20,7 +20,7 @@ module.exports = {
     },
     module: {
         rules: [
-            { test: /\.ts(x?)$/, loader: "awesome-typescript-loader" },
+            { test: /\.ts(x?)$/, loader: "ts-loader" },
             {
                 test: /\.scss$/,
                 use: [

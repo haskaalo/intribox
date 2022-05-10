@@ -14,4 +14,5 @@ export type ChangeUserAuthAction = ReturnType<typeof ChangeUserAuth>;
 
 const UserActions = { ChangeUserAuth };
 
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export type UserActions = ActionsUnion<typeof UserActions>;

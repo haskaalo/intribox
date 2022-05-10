@@ -7,7 +7,7 @@ class NavbarHeader extends React.Component {
             <NavbarBrand className="hidden-sm-block">IntriBox</NavbarBrand>
             <Col md={6} className="mx-auto">
                 <Form>
-                    <Input bsSize="lg" placeholder="Search music, playlist or artists"></Input>
+                    <Input bsSize="lg" placeholder="Search music, playlist or artists" />
                 </Form>
             </Col>
         </Navbar>;
