@@ -6,6 +6,7 @@ dist/
 *.log
 
 .vscode
+.idea
 debug
 
 # intribox specific files
