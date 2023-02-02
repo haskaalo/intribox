@@ -3,7 +3,7 @@ package media
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"mime/multipart"
 	"net/http"
 	"testing"
@@ -67,7 +67,7 @@ func TestPostNew(t *testing.T) {
 		assert.Equal(t, http.StatusOK, resp.StatusCode, "Expect status code to be 200")
 
 		defer resp.Body.Close()
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		assert.NoError(t, err, "Should not have an error while reading request body")
 
 		resBody := response.M{}

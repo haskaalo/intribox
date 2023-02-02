@@ -3,7 +3,7 @@ package auth
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"testing"
 
@@ -37,7 +37,7 @@ func TestPostLogin(t *testing.T) {
 		assert.Equal(t, http.StatusOK, resp.StatusCode, "Expect status to be OK")
 
 		defer resp.Body.Close()
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		assert.NoError(t, err, "Should not have an error while reading request body")
 
 		reqBody := response.M{}
@@ -60,7 +60,7 @@ func TestPostLogin(t *testing.T) {
 		assert.Equal(t, http.StatusNotFound, resp.StatusCode, "Expect status to be Not Found")
 
 		defer resp.Body.Close()
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		assert.NoError(t, err, "Should not have an error while reading request body")
 
 		reqBody := response.M{}

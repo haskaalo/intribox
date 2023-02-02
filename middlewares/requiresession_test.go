@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strconv"
 	"testing"
@@ -37,7 +37,7 @@ func TestRequireSession(t *testing.T) {
 
 		defer resp.Body.Close()
 
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		assert.Nil(t, err)
 		assert.Equal(t, strconv.Itoa(1), string(body))
 	})

@@ -2,7 +2,7 @@ package middlewares
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strconv"
 	"testing"
@@ -37,7 +37,7 @@ func TestSetSession(t *testing.T) {
 
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	assert.Nil(t, err)
 	assert.Equal(t, selector+"|"+utils.SHA1([]byte(v))+"|"+"1", string(body))
 }

@@ -2,7 +2,7 @@ package media
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"testing"
 
@@ -88,7 +88,7 @@ func TestGetList(t *testing.T) {
 		assert.Equal(t, http.StatusOK, resp.StatusCode, "Expect status code to be 200")
 
 		// Get json
-		body, _ := ioutil.ReadAll(resp.Body)
+		body, _ := io.ReadAll(resp.Body)
 		mediaListInRequest := new([]getListResponse)
 		err = json.Unmarshal(body, mediaListInRequest)
 		assert.NoError(t, err, "Decoding the JSON should have 0 errors")

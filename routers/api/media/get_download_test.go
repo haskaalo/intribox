@@ -2,7 +2,7 @@ package media
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"testing"
 
@@ -34,7 +34,7 @@ func testPostTestingImage(url string, testSession *models.TestingUserSession, t 
 	assert.Equal(t, http.StatusOK, resp.StatusCode, "Expect status code to be 200")
 
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	assert.NoError(t, err, "Should not have an error while reading request body")
 
 	resBody := &postNewResponse{}
@@ -107,7 +107,7 @@ func TestGetDownload(t *testing.T) {
 		resp, err := client.Do(req)
 		assert.NoError(t, err, "HTTP Get should have no error")
 
-		body, _ := ioutil.ReadAll(resp.Body)
+		body, _ := io.ReadAll(resp.Body)
 		assert.Equal(t, http.StatusNotFound, resp.StatusCode, "Status should be 404", "This is the body: ", string(body))
 	})
 
@@ -122,7 +122,7 @@ func TestGetDownload(t *testing.T) {
 		resp, err := client.Do(req)
 		assert.NoError(t, err, "HTTP Get should have no error")
 
-		body, _ := ioutil.ReadAll(resp.Body)
+		body, _ := io.ReadAll(resp.Body)
 		assert.Equal(t, http.StatusBadRequest, resp.StatusCode, "Status should be 404", "This is the body: ", string(body))
 	})
 }

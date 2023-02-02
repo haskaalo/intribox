@@ -7,7 +7,7 @@ export AWS_DEFAULT_REGION = us-east-1
 
 .PHONY: lint
 lint:
-	golint $(PACKAGES)
+	golangci-lint run ./...
 
 .PHONY: test
 test:
