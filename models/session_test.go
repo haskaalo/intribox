@@ -107,9 +107,10 @@ func TestInitiateSession(t *testing.T) {
 func TestDeleteOldestSession(t *testing.T) {
 	t.Run("Should successfully delete the oldest session", func(t *testing.T) {
 		err := r.FlushAll().Err()
+		assert.NoError(t, err)
 
 		oldestSessionSelector := ""
-		for i := 0; i < 5; i++ {
+		for i := 0; i < 3; i++ {
 			selector, _, err := InitiateSession(42069)
 			if i == 0 {
 				oldestSessionSelector = selector
