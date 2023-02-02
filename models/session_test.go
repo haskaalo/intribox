@@ -106,30 +106,23 @@ func TestInitiateSession(t *testing.T) {
 
 func TestDeleteOldestSession(t *testing.T) {
 	t.Run("Should successfully delete the oldest session", func(t *testing.T) {
-		// Goroutine to avoid locking other tests
-		c := make(chan string)
-		go func() {
-			oldestSessionSelector := ""
-			for i := 0; i < 5; i++ {
-				selector, _, err := InitiateSession(42069)
-				if i == 0 {
-					oldestSessionSelector = selector
-				}
+		err := r.FlushAll().Err()
 
-				assert.NoError(t, err)
-				time.Sleep(2 * time.Second) // Make sure we get the oldest session
+		oldestSessionSelector := ""
+		for i := 0; i < 5; i++ {
+			selector, _, err := InitiateSession(42069)
+			if i == 0 {
+				oldestSessionSelector = selector
 			}
 
-			err := DeleteOldestSession(42069)
-			assert.NoError(t, err, "Calling DeleteOldestSession should have no error")
-
-			_, err = GetSessionBySelector(oldestSessionSelector)
-			assert.EqualError(t, err, redis.Nil.Error(), "The oldest session should no longer exist")
-			c <- "done"
-		}()
-
-		if <-c == "done" {
-			println("done")
+			assert.NoError(t, err)
+			time.Sleep(2 * time.Second) // Make sure we get the oldest session
 		}
+
+		err = DeleteOldestSession(42069)
+		assert.NoError(t, err, "Calling DeleteOldestSession should have no error")
+
+		_, err = GetSessionBySelector(oldestSessionSelector)
+		assert.EqualError(t, err, redis.Nil.Error(), "The oldest session should no longer exist")
 	})
 }

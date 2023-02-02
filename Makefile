@@ -11,7 +11,7 @@ lint:
 
 .PHONY: test
 test:
-	go test -cover ./...
+	go test -cover -p 1 ./...
 
 .PHONY: setupaws
 setupaws: 
