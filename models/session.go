@@ -112,11 +112,31 @@ func (s Session) ResetTimeSession() error {
 }
 
 // InitiateSession Create a session for a user
+// TODO: Allow a maximum of 10 active sessions. Otherwise, delete the oldest
 func InitiateSession(uid int) (selector string, validator string, err error) {
+	// Get active sessions
+	activeSessions, err := r.SMembers(SessionGroupPrefix + strconv.Itoa(uid)).Result()
+	if err != nil {
+		return "", "", err
+	}
+
+	// Checks if the number of active session if higher than 10
+	if len(activeSessions) >= 10 {
+		err = DeleteOldestSession(uid)
+		if err != nil {
+			return "", "", err
+		}
+	}
+
+	// s for selector
+	// v for validator
+	// s for selector
 	s := utils.RandString(12)
 	v := utils.RandString(50)
 	hashS := utils.SHA1([]byte(s))
 
+	// Create new session
+	// Validator acts as some sort of key
 	err = r.HMSet(SessionPrefix+hashS, map[string]interface{}{
 		"userid":    uid,
 		"validator": utils.SHA1([]byte(v)),
@@ -126,11 +146,13 @@ func InitiateSession(uid int) (selector string, validator string, err error) {
 		return "", "", err
 	}
 
+	// Add the new session to a set of session ids for that user
 	err = r.SAdd(SessionGroupPrefix+strconv.Itoa(uid), hashS).Err()
 	if err != nil {
 		return "", "", err
 	}
 
+	// Make sure the session expire being inactive for a while
 	err = Session{
 		Selector: s,
 		UserID:   uid,
@@ -140,4 +162,33 @@ func InitiateSession(uid int) (selector string, validator string, err error) {
 	}
 
 	return s, v, nil
+}
+
+// DeleteOldestSession This function deletes the session that will expire the soonest
+// for a given userID
+func DeleteOldestSession(uid int) error {
+	// Get all active session for the user
+	vals, err := r.SMembers(SessionGroupPrefix + strconv.Itoa(uid)).Result()
+	if err != nil {
+		return err
+	}
+
+	oldestSessHashSelector := ""
+	oldestSessTTL := 1.7e+308
+
+	// Get the session that will expire the soonest and set it
+	for _, sessionSelector := range vals {
+		duration := r.TTL(SessionPrefix + sessionSelector).Val().Seconds()
+		if duration < oldestSessTTL {
+			oldestSessHashSelector = sessionSelector
+			oldestSessTTL = duration
+		}
+	}
+
+	// Delete the oldest session if it exist
+	if oldestSessHashSelector != "" {
+		_, err = r.Del(SessionPrefix + oldestSessHashSelector).Result()
+	}
+
+	return err
 }

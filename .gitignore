@@ -1,5 +1,8 @@
 bin
 *.exe
+intribox
+devtool/devtool
+devtool/devtool.exe
 
 node_modules/
 dist/
