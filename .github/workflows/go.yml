@@ -19,9 +19,7 @@ jobs:
       run: docker-compose -f docker-compose.dev.yml up -d
     
     - name: Installing AWS CLI
-      run: |
-        sudo apt-get install awscli
-        docker logs localstack
+      run: sudo apt-get install awscli
 
     - name: Setup localstack
       run: make setupaws
