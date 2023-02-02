@@ -20,8 +20,8 @@ jobs:
     
     - name: Installing AWS CLI
       run: |
-      sudo apt-get install awscli
-      docker ps -a
+        sudo apt-get install awscli
+        docker ps -a
 
     - name: Setup localstack
       run: make setupaws
