@@ -34,7 +34,6 @@ services:
     ports:
       - 4566:4566
     environment:
-      - DATA_DIR=/tmp/localstack/data 
       - SERVICES=s3
     volumes:
       - './.localstack:/tmp/localstack'
