@@ -1,12 +1,12 @@
 import React, {useState } from "react";
-import { ChangeUserAuth } from "@home/redux/actions/user";
+import { changeUserAuthentication } from "@home/redux/slice/user";
 import { Container, Row, Form, FormGroup, Button, Input } from "reactstrap";
 import { connect } from "react-redux";
 import {useNavigate} from "react-router-dom";
 import { LoginUser, KnownError } from "@home/request";
 
 export interface IProps {
-    UserAuth: typeof ChangeUserAuth;
+    UserAuth: typeof changeUserAuthentication;
 }
 
 function SignIn(props: IProps) {
@@ -51,4 +51,5 @@ function SignIn(props: IProps) {
     </Container>;
 }
 
-export default connect(null, { UserAuth: ChangeUserAuth })(SignIn);
+
+export default connect(null, { UserAuth: changeUserAuthentication })(SignIn);

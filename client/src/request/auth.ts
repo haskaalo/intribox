@@ -4,7 +4,6 @@ export const LoginUser = async (email: string, password: string): Promise<string
     const response = await fetch(`${BUILDCONFIG.apiUrl}/auth/login`, {
         method: "POST",
         headers: {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
             "Content-Type": "application/json; charset=utf-8",
         },
         redirect: "follow",

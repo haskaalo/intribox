@@ -1,6 +1,6 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import {IUser} from "@home/redux/actions/user";
+import {UserState} from "@home/redux/slice/user";
 import { RouteProps, Navigate } from "react-router-dom";
 
 
@@ -20,7 +20,7 @@ class RequirementRoute extends React.Component<RouteProps & IPropsRedux> {
     }
 }
 
-const mapStateToProps = ({user}: {user: IUser}): IPropsRedux => ({
+const mapStateToProps = ({user}: {user: UserState}): IPropsRedux => ({
     isAuthenticated: user.isAuthenticated,
 });
 

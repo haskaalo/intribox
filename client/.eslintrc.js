@@ -17,5 +17,7 @@ module.exports = {
         "import/prefer-default-export": 0,
         "no-alert": 0,
         "@typescript-eslint/default-param-last": 0,
+        "no-param-reassign": 0,
+        "no-plusplus": 0,
     }
   };

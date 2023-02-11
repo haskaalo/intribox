@@ -1,7 +1,6 @@
 package models
 
 import (
-	"database/sql/driver"
 	"fmt"
 	"time"
 
@@ -9,14 +8,6 @@ import (
 	"github.com/haskaalo/intribox/utils"
 	"github.com/jmoiron/sqlx"
 )
-
-// MediaType Custom type for determining if a media file is a picture or video
-type MediaType string
-
-// Value return the value of MediaType as byte type
-func (m MediaType) Value() (driver.Value, error) {
-	return []byte(m), nil
-}
 
 // Media SQL Table
 type Media struct {
@@ -98,7 +89,7 @@ func GetListMedia(ownerid int, maxLength int, page int) (*[]Media, error) {
 func GenerateRandomMedia(n int, ownerID int) []Media {
 	allMediaInDatabase := []Media{}
 	// Insert 25 random
-	for i := 0; i < n; i++ { //nolint
+	for i := 0; i < n; i++ {
 		mediaTest := &Media{
 			ID:           uuid.New(),
 			Name:         utils.RandString(5),

@@ -112,7 +112,6 @@ func (s Session) ResetTimeSession() error {
 }
 
 // InitiateSession Create a session for a user
-// TODO: Allow a maximum of 10 active sessions. Otherwise, delete the oldest
 func InitiateSession(uid int) (selector string, validator string, err error) {
 	// Get active sessions
 	activeSessions, err := r.SMembers(SessionGroupPrefix + strconv.Itoa(uid)).Result()

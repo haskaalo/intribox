@@ -1,0 +1,25 @@
+/*
+<div class="media-grid">
+    <div class="media-wrap">
+        <img src="..." />
+    </div>
+</div>
+*/
+
+.section-media-grid {
+    margin: auto; /* centre la section au centre de la page*/
+    text-align: center;
+    width: 80%;
+}
+
+.media-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-gap: 5px;
+}
+
+.media-wrap > img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
