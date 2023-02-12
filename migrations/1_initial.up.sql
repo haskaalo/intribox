@@ -20,3 +20,19 @@ CREATE TABLE media (
 	size BIGINT NOT NULL,
 	PRIMARY KEY (id)
 );
+
+CREATE TABLE album (
+	id uuid NOT NULL DEFAULT uuid_generate_v4(),
+	ownerid INT REFERENCES users(id) ON DELETE CASCADE,
+	title varchar(255) NOT NULL,
+	description TEXT,
+	created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+	PRIMARY KEY (id)
+);
+
+CREATE TABLE album_media (
+	id uuid NOT NULL DEFAULT uuid_generate_v4(),
+	albumid uuid REFERENCES album(id) ON DELETE CASCADE,
+	mediaid uuid REFERENCES media(id) ON DELETE CASCADE,
+	PRIMARY KEY (id)
+);

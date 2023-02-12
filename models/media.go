@@ -27,8 +27,8 @@ func (s *Media) InsertNewMedia() (id uuid.UUID, err error) {
 
 func (s *Media) insertNewMedia(q sqlx.Ext) (uuid.UUID, error) {
 	var id uuid.UUID
-	query := `INSERT INTO media (id, name, type, ownerid, filehash, size, uploaded_time) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`
-	err := sqlx.Get(q, &id, query, s.ID, s.Name, s.Type, s.OwnerID, s.FileHash, s.Size, s.UploadedTime)
+	query := `INSERT INTO media (id, name, type, ownerid, filehash, size) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`
+	err := sqlx.Get(q, &id, query, s.ID, s.Name, s.Type, s.OwnerID, s.FileHash, s.Size)
 
 	return id, knownDatabaseError(err)
 }

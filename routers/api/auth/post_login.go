@@ -18,7 +18,7 @@ func postLogin(w http.ResponseWriter, r *http.Request) {
 	params := new(loginParams)
 	err := json.NewDecoder(r.Body).Decode(params)
 	if err != nil {
-		response.InternalError(w) // Probably change depending on the error.
+		response.InvalidParameter(w, "body")
 		return
 	}
 
