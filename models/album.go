@@ -26,3 +26,16 @@ func (a *Album) insertNewAlbum(q sqlx.Ext) (uuid.UUID, error) {
 
 	return id, knownDatabaseError(err)
 }
+
+func GetAlbumListByOwnerID(ownerid int) (*[]Album, error) {
+	return getAlbumListByOwnerID(ownerid, db)
+}
+
+func getAlbumListByOwnerID(ownerid int, q sqlx.Ext) (*[]Album, error) {
+	albums := new([]Album)
+
+	query := "SELECT * FROM album WHERE ownerid=$1"
+	err := sqlx.Select(q, albums, query, ownerid)
+
+	return albums, knownDatabaseError(err)
+}
