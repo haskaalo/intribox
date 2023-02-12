@@ -1,3 +1,4 @@
-dist
+dist/
 .eslintrc.js
+node_modules/
 webpack.config*.js

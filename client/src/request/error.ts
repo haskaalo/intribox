@@ -1,3 +1,6 @@
+import { changeUserAuthentication } from "@home/redux/slice/user";
+import store from "@home/redux/store";
+
 export enum KnownError {
     "NETWORK_ERROR" = "A network error happened while requesting data",
     "NOT_FOUND" = "Not Found",
@@ -21,3 +24,13 @@ export const giveErrorFromStatusCode = (status: number) => {
         }
     }
 };
+
+export const handleKnownError = (s: KnownError) => {
+    // eslint-disable-next-line default-case
+    switch (s) {
+        case KnownError.UNAUTHORIZED: {
+            store.dispatch(changeUserAuthentication(false));
+            break;
+        }
+    }
+}

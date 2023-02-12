@@ -1,4 +1,4 @@
-import { KnownError, giveErrorFromStatusCode } from "./error";
+import { KnownError, giveErrorFromStatusCode, handleKnownError } from "./error";
 
 export const LoginUser = async (email: string, password: string): Promise<string> => {
     const response = await fetch(`${BUILDCONFIG.apiUrl}/auth/login`, {
@@ -15,6 +15,7 @@ export const LoginUser = async (email: string, password: string): Promise<string
     const errorVal = giveErrorFromStatusCode(response.status);
 
     if (errorVal !== null) {
+        handleKnownError(errorVal);
         throw new Error(errorVal);
     }
 

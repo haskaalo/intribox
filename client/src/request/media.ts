@@ -1,4 +1,4 @@
-import { giveErrorFromStatusCode, KnownError } from "./error";
+import { giveErrorFromStatusCode, handleKnownError, KnownError } from "./error";
 
 interface UploadMediaParams {
     file: File;
@@ -26,6 +26,7 @@ export const UploadMedia = async (params: UploadMediaParams): Promise<UploadMedi
     const errorVal = giveErrorFromStatusCode(response.status);
 
     if (errorVal !== null) {
+        handleKnownError(errorVal);
         throw new Error(errorVal);
     }
 
@@ -56,6 +57,7 @@ export const GetListMedia = async () => {
     const errorVal = giveErrorFromStatusCode(response.status);
 
     if (errorVal !== null) {
+        handleKnownError(errorVal);
         throw new Error(errorVal);
     }
 

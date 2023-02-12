@@ -17,6 +17,7 @@ function NavbarHeader() {
             doMediaUpload(f[i]);
         }
     }
+
     return <Navbar className="home-navbar">
     <NavbarBrand className="hidden-sm-block">IntriBox</NavbarBrand>
     <Col md={6} className="mx-auto">
@@ -28,7 +29,7 @@ function NavbarHeader() {
         <NavItem>
             <Label >
                 Upload
-                <Input type="file" style={{display: "none"}} onChange={(e) => handleUpload(e.target.files)}/>
+                <Input type="file"  multiple style={{display: "none"}} onChange={(e) => handleUpload(e.target.files)}/>
             </Label>
         </NavItem>
     </Nav>
