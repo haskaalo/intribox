@@ -14,6 +14,10 @@ In other words, a end-to-end encrypted alternative to Google Photos
 * Self-hostable with ability to store locally on a drive or a S3-compatible cloud provider
 * See all of your files online on the web
 
+## Getting started
+
+(TODO)
+
 ## Developers
 
 ### Explanation of the stack
