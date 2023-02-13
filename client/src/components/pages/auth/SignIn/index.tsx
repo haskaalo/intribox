@@ -1,9 +1,10 @@
 import React, {useState } from "react";
 import { changeUserAuthentication } from "@home/redux/slice/user";
 import { Container, Row, Form, FormGroup, Button, Input } from "reactstrap";
-import { connect } from "react-redux";
-import {useNavigate} from "react-router-dom";
+import { connect, useSelector } from "react-redux";
+import {Navigate, useNavigate} from "react-router-dom";
 import { LoginUser, KnownError } from "@home/request";
+import { RootState } from "@home/redux/store";
 
 export interface IProps {
     UserAuth: typeof changeUserAuthentication;
@@ -14,6 +15,8 @@ function SignIn(props: IProps) {
     const [password, setPassword] = useState("");
 
     const navigate = useNavigate();
+
+    const isAuthenticated = useSelector((state: RootState) => state.user.isAuthenticated);
 
     async function handleFormSubmit(event: React.FormEvent) {
         event.preventDefault();
@@ -33,6 +36,10 @@ function SignIn(props: IProps) {
             UserAuth(true);
             navigate("/home");
         }
+    }
+
+    if (isAuthenticated) {
+        return <Navigate to="/home" replace />
     }
 
     return <Container fluid>
