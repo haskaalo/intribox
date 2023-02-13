@@ -6,12 +6,16 @@ import RequirementRoute from "./containers/RequirementRoute";
 import "./styles/base.scss";
 import store from "./redux/store";
 import Loading from "./components/Loading";
-import Home from "./components/pages/home";
 
 
 const SignIn = Loadable({
     loader: () => import("./components/pages/auth/SignIn"),
     loading: Loading,
+});
+
+const Home = Loadable({
+    loader: () => import("./components/pages/home"),
+    loading: Loading
 });
 
 class App extends React.Component {
@@ -27,4 +31,5 @@ class App extends React.Component {
     </Provider>
     }
 }
+
 export default App;

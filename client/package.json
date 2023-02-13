@@ -48,7 +48,7 @@
   "scripts": {
     "build": "webpack --config webpack.config.prod.js",
     "watch": "webpack --config webpack.config.dev.js --watch",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
+    "lint": "NODE_OPTIONS=\"--max-old-space-size=4096\" && eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.2",

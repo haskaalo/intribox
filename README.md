@@ -22,4 +22,4 @@ In other words, a end-to-end encrypted alternative to Google Photos
 
 ### Explanation of the stack
 
-The webserver is made in Golang while the front-end is made using React and Redux for state management. The encryption is done almost the same way as Bitwarden. More explanation coming soon.
+The webserver is made in Golang while the front-end is a SAP made using React and Redux for state management. The encryption is done almost the same way as Bitwarden. More explanation coming soon.

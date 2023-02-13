@@ -63,6 +63,7 @@ func TestGetAlbumList(t *testing.T) {
 		resBody := []getAlbumListResponse{}
 		err = json.Unmarshal(body, &resBody)
 		assert.NoError(t, err)
+		assert.Equal(t, 2, len(resBody))
 
 		seenAlbum := 0
 		for _, album := range resBody {

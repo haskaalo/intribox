@@ -18,3 +18,6 @@ intribox_config.ini
 
 #localstack for testing s3
 .localstack/
+
+# MacOS bs
+.DS_STORE

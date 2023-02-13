@@ -4,7 +4,9 @@ import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { GetListMedia } from "@home/request/media";
 import { AppDispatch, RootState } from "@home/redux/store";
+import { Row, Col } from "reactstrap";
 import MediaComponent from "./media_component";
+import AlbumList from "../AlbumList";
 
 function MediaGrid() {
     const medias = useSelector((state: RootState) => state.mediagrid.loadedMedias);
@@ -35,11 +37,24 @@ function MediaGrid() {
         loadMedia();
     }, []);
 
-    return <div className="section-media-grid">
-        <div className="media-grid">
-            {medias.map(media => <MediaComponent media={media} key={`mediacomp-${media.id}`} />)}
+    const mediaRows= [];
+
+    for (let i = 0; i < medias.length; i++) {
+        const mediaComponent = <Col xs={3} md={2} className="media-col"><MediaComponent media={medias[i]} /></Col>;
+        if (i % 12 === 0) {
+            mediaRows.push([mediaComponent]);
+        } else {
+            mediaRows[mediaRows.length - 1].push(mediaComponent);
+        }
+    }
+
+    let keyIndex = 0
+    return <div>
+        <AlbumList />
+        <div className="section-media-grid">
+        {mediaRows.map(rowChildrens => <Row key={`row-${keyIndex++}`}>{rowChildrens}</Row>)}
         </div>
-    </div>;
+    </div>
 }
 
 export default MediaGrid
