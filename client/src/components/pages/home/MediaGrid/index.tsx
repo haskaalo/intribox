@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { GetListMedia } from "@home/request/media";
 import { AppDispatch, RootState } from "@home/redux/store";
 import { Row, Col } from "reactstrap";
+import { KnownError } from "@home/request";
 import MediaComponent from "./media_component";
 import AlbumList from "../AlbumList";
 
@@ -25,8 +26,9 @@ function MediaGrid() {
             // preloading
             dispatch(addMedia(addedResponse));
         } catch(err) {
-            // TODO: Change that
-            alert("Error while loading medias check console")
+            if (err === KnownError.UNAUTHORIZED) return;
+
+            alert("Error while loading medias check console") // TODO: Change that
             // eslint-disable-next-line no-console
             console.error(err);
         }
