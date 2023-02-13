@@ -37,22 +37,28 @@ function MediaGrid() {
         loadMedia();
     }, []);
 
-    const mediaRows= [];
-
+    // Prepare rendering
+    const mediaRows= []; // Medias in a matrix with 12 columns
+    const mediaRowsKey: String[] = []; // The key for each rows (For react, long keys are not a problem, js dont compare in O(n))
     for (let i = 0; i < medias.length; i++) {
-        const mediaComponent = <Col xs={3} md={2} className="media-col"><MediaComponent media={medias[i]} /></Col>;
+        const mediaComponent = <Col xs={3} md={2} className="media-col" key={`col-${medias[i].id}`}>
+            <MediaComponent media={medias[i]} />
+        </Col>;
+
         if (i % 12 === 0) {
             mediaRows.push([mediaComponent]);
+            mediaRowsKey.push(medias[i].id);
         } else {
             mediaRows[mediaRows.length - 1].push(mediaComponent);
+            mediaRowsKey[mediaRows.length-1] += medias[i].id;
         }
     }
-
-    let keyIndex = 0
+    
+    
     return <div>
         <AlbumList />
         <div className="section-media-grid">
-        {mediaRows.map(rowChildrens => <Row key={`row-${keyIndex++}`}>{rowChildrens}</Row>)}
+        {mediaRows.map((rowChildrens, i) => <Row key={`rows${mediaRowsKey[i]}`}>{rowChildrens}</Row>)}
         </div>
     </div>
 }
