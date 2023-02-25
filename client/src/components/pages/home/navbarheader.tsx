@@ -27,7 +27,7 @@ function NavbarHeader() {
     </Col>
     <Nav>
         <NavItem>
-            <Label >
+            <Label style={{cursor: "pointer"}}>
                 Upload
                 <Input type="file"  multiple style={{display: "none"}} onChange={(e) => handleUpload(e.target.files)}/>
             </Label>
