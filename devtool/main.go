@@ -10,8 +10,8 @@ import (
 
 func printAvailableCommands() {
 	fmt.Println("Invalid options")
-	fmt.Println("\nCommand available:")
-	fmt.Println("	testuser: Create test user")
+	fmt.Println("\nAction available:")
+	fmt.Println("	-action=testuser: Create test user")
 }
 
 func main() {

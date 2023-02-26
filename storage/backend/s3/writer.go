@@ -18,8 +18,7 @@ type s3Writer struct {
 	size   int64
 }
 
-// WriteObject prepare file to be uploaded to s3
-// usually to tmp first
+// WriteObject Write the file to path in S3
 func (*R) WriteObject(in io.Reader, path string) (backend.ObjectAction, error) {
 	s3writer := new(s3Writer)
 
