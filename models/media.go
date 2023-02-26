@@ -21,16 +21,15 @@ type Media struct {
 }
 
 // InsertNewMedia Insert a new media file
-func (s *Media) InsertNewMedia() (id uuid.UUID, err error) {
+func (s *Media) InsertNewMedia() (err error) {
 	return s.insertNewMedia(db)
 }
 
-func (s *Media) insertNewMedia(q sqlx.Ext) (uuid.UUID, error) {
-	var id uuid.UUID
-	query := `INSERT INTO media (id, name, type, ownerid, filehash, size) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`
-	err := sqlx.Get(q, &id, query, s.ID, s.Name, s.Type, s.OwnerID, s.FileHash, s.Size)
+func (s *Media) insertNewMedia(q sqlx.Ext) error {
+	query := `INSERT INTO media (id, name, type, ownerid, filehash, size) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`
+	err := sqlx.Get(q, s, query, s.ID, s.Name, s.Type, s.OwnerID, s.FileHash, s.Size)
 
-	return id, knownDatabaseError(err)
+	return knownDatabaseError(err)
 }
 
 // MediaHashExist Does a media file with following hash and ownerid exist
@@ -100,7 +99,7 @@ func GenerateRandomMedia(n int, ownerID int) []Media {
 			Size:         420,
 		}
 		allMediaInDatabase = append(allMediaInDatabase, *mediaTest)
-		_, err := mediaTest.InsertNewMedia()
+		err := mediaTest.InsertNewMedia()
 		if err != nil {
 			panic(err)
 		}

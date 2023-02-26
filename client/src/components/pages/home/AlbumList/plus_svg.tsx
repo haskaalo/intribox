@@ -1,11 +1,20 @@
 import Buttonize from "@home/propsbuilder/buttonize";
+import { CreateNewEmptyAlbum } from "@home/request/album";
 import * as React from "react";
 
 // This is how it looks: https://jsfiddle.net/gd639jvb/
 function PlusSVG() {
-  function handleClick() {
+  async function handleClick() {
     const value = window.prompt("Album name") // TODO: Change this
-    console.log(value);
+    
+    // Create empty album
+    try {
+      const id = await CreateNewEmptyAlbum({name: value});
+      alert(`Successfully created new album ID: ${id}`) // TODO: Change this to a better signifiant
+    } catch (err) {
+      alert("Error while creating new album") // TODO: Change this to a better signifiant
+      console.error(err);
+    }
   }
   
   const {tabIndex, onClick, onKeyDown} = Buttonize(handleClick);

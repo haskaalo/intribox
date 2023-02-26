@@ -6,7 +6,12 @@ interface UploadMediaParams {
 
 interface UploadMediaResponse {
     id: string;
+    name: string;
+    uploaded_time: number;
+    size: number;
+    download_url: string;
 }
+
 export const UploadMedia = async (params: UploadMediaParams): Promise<UploadMediaResponse> => {
     const formData = new FormData();
     formData.append("file", params.file, params.file.name);
@@ -56,7 +61,7 @@ export const GetListMedia = async () => {
 
     const errorVal = giveErrorFromStatusCode(response.status);
 
-    if (errorVal !== null) {
+    if (errorVal != null) {
         handleKnownError(errorVal);
         throw new Error(errorVal);
     }

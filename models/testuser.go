@@ -12,11 +12,16 @@ type TestingUserSession struct {
 	FullSessionToken string
 }
 
-// CreateTestUser Create a test user (delete )
+// CreateTestUser Create a test user
 func CreateTestUser() (*User, error) {
+	return CreateTestUserWithCustomEmail(utils.RandString(5) + "@example.com")
+}
+
+// CreateTestUserWithCustomEmail Create a test user with a password 137945 and specified email
+func CreateTestUserWithCustomEmail(email string) (*User, error) {
 	user := &User{
-		Email:    utils.RandString(5) + "@example.com",
-		Password: []byte("$2y$12$LXAwwYDwaHY7dR/LM8QzIOWE.nqbJ7wor/u7KZBrh3e6wnlqZsn66"), // The password is: 137945 hehe,
+		Email:    email,
+		Password: []byte("$2y$12$LXAwwYDwaHY7dR/LM8QzIOWE.nqbJ7wor/u7KZBrh3e6wnlqZsn66"), // The password is: 137945,
 	}
 
 	err := user.InsertNewUser()

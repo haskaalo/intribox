@@ -27,7 +27,7 @@ func TestInsertNewMedia(t *testing.T) {
 	}
 
 	t.Run("Should successfully insert a new media", func(t *testing.T) {
-		_, err := mediaTest.InsertNewMedia()
+		err := mediaTest.InsertNewMedia()
 		assert.NoError(t, err, "Calling InsertNewMedia should have no error")
 	})
 }
@@ -52,7 +52,7 @@ func TestMediaHashExist(t *testing.T) {
 	}
 
 	t.Run("Should return true with no error if there's an existing picture with the same hash under an user", func(t *testing.T) {
-		_, err := mediaTest.InsertNewMedia()
+		err := mediaTest.InsertNewMedia()
 		assert.NoError(t, err)
 
 		result, err := MediaHashExist(mediaTest.OwnerID, mediaTest.FileHash)
@@ -87,10 +87,10 @@ func TestGetMediaByID(t *testing.T) {
 	}
 
 	t.Run("Should return a valid picture", func(t *testing.T) {
-		mediaid, err := mediaTest.InsertNewMedia()
+		err := mediaTest.InsertNewMedia()
 		assert.NoError(t, err)
 
-		mediaInDatabase, err := GetMediaByID(mediaid, mediaTest.OwnerID)
+		mediaInDatabase, err := GetMediaByID(mediaTest.ID, mediaTest.OwnerID)
 		assert.NoError(t, err, "Calling GetMediaByID should have no error")
 		assert.Equal(t, mediaInDatabase.ID, mediaTest.ID)
 		assert.Equal(t, mediaInDatabase.FileHash, mediaTest.FileHash)
@@ -99,7 +99,7 @@ func TestGetMediaByID(t *testing.T) {
 	t.Run("Should return error with ErrNoRecord if media doesn't exist", func(t *testing.T) {
 		err := DeleteAllMedias()
 		assert.NoError(t, err)
-		_, err = mediaTest.InsertNewMedia()
+		err = mediaTest.InsertNewMedia()
 		assert.NoError(t, err)
 
 		mediaInDatabase, err := GetMediaByID(uuid.MustParse("47a4c648-6d15-4d8b-8be6-49e55219b89d"), mediaTest.OwnerID)

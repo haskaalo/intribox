@@ -6,6 +6,8 @@ import (
 )
 
 func InitRouter(r *mux.Router) {
-	r.HandleFunc("/post_new", postNewAlbum).Methods("POST")
+	r.HandleFunc("/new", postNewAlbum).Methods("POST")
+	r.HandleFunc("/list", getAlbumList).Methods("GET")
+
 	r.Use(middlewares.SetSession, middlewares.RequireSession)
 }

@@ -41,10 +41,7 @@ func testPostTestingImage(url string, testSession *models.TestingUserSession, t 
 	err = json.Unmarshal(body, &resBody)
 	assert.NoError(t, err)
 
-	idUUID, err := uuid.Parse(resBody.ID)
-	assert.NoError(t, err, "uuid must successfully be parsed")
-
-	return idUUID
+	return resBody.ID
 }
 
 func TestGetDownload(t *testing.T) {

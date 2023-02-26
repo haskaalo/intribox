@@ -5,7 +5,8 @@ export enum KnownError {
     "NETWORK_ERROR" = "A network error happened while requesting data",
     "NOT_FOUND" = "Not Found",
     "INTERNAL_ERROR" = "Internal Error",
-    "UNAUTHORIZED" = "Unauthorized"
+    "UNAUTHORIZED" = "Unauthorized",
+    "CONFLICT" = "Conflict"
 }
 
 export const giveErrorFromStatusCode = (status: number) => {
@@ -18,6 +19,9 @@ export const giveErrorFromStatusCode = (status: number) => {
         }
         case 401: {
             return KnownError.UNAUTHORIZED;
+        }
+        case 409: {
+            return KnownError.CONFLICT;
         }
         default: {
             return null;

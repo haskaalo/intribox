@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import UserReducer from "./slice/user";
 import MediaGridReducer from "./slice/mediagrid";
+import AlbumListReducer from "./slice/albumlist";
 
 const store = configureStore({
     reducer: {
         user: UserReducer,
         mediagrid: MediaGridReducer,
+        albumlist: AlbumListReducer
     }
 });
 

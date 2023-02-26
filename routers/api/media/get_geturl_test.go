@@ -41,10 +41,10 @@ func TestGetMediaURL(t *testing.T) {
 			Size:     420,
 		}
 
-		fakeMediaID, err := fakeMedia.InsertNewMedia()
+		err := fakeMedia.InsertNewMedia()
 		assert.NoError(t, err)
 		jsonGetURLParams, err := json.Marshal(&getMediaURLParams{
-			ID: fakeMediaID.String(),
+			ID: fakeMedia.ID.String(),
 		})
 		assert.NoError(t, err)
 

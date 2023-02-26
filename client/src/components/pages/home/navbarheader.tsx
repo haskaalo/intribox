@@ -1,14 +1,19 @@
+import { addMedia } from "@home/redux/slice/mediagrid";
+import { AppDispatch } from "@home/redux/store";
 import { UploadMedia } from "@home/request/media";
 import * as React from "react";
+import { useDispatch } from "react-redux";
 import { Navbar, NavbarBrand, Form, Input, Col, NavItem, Nav, Label } from "reactstrap";
 
 function NavbarHeader() {
+    const dispatch: AppDispatch = useDispatch();
+    
     async function doMediaUpload(file: File) {
         try {
             const response = await UploadMedia({file});
-            alert(`Successfull ID: ${response.id}`);
+            dispatch(addMedia([{...response, downloaded: false}]));
         } catch (err) {
-            alert(`Error while uploading: ${  err.message}`);
+            alert(`Error while uploading: ${  err.message}`); // TODO: Change this!
         }
     }
 

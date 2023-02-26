@@ -14,7 +14,11 @@ import (
 )
 
 type postNewResponse struct {
-	ID string `json:"id"`
+	ID           uuid.UUID `json:"id"`
+	Name         string    `json:"name"`
+	UploadedTime int64     `json:"uploaded_time"`
+	Size         int64     `json:"size"`
+	DownloadURL  string    `json:"download_url"`
 }
 
 func validNewFileContentType(contentType string) bool {
@@ -82,7 +86,7 @@ func postNew(w http.ResponseWriter, r *http.Request) {
 	media.FileHash = objectWriter.SHA256()
 	media.Size = objectWriter.Size()
 
-	mediaid, err := media.InsertNewMedia()
+	err = media.InsertNewMedia()
 	if err != nil {
 		response.InternalError(w)
 
@@ -95,7 +99,13 @@ func postNew(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	mediaObjectURL, _ := storage.Remote.GetReadObjectURL(media.GetMediaPath(), media.ID)
+
 	response.Respond(w, &postNewResponse{
-		ID: mediaid.String(),
+		ID:           media.ID,
+		Name:         media.Name,
+		UploadedTime: media.UploadedTime.Unix(),
+		Size:         media.Size,
+		DownloadURL:  mediaObjectURL,
 	}, 200)
 }

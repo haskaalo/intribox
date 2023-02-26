@@ -30,7 +30,7 @@ export const mediaGridSlice = createSlice({
 
             const initialLength = state.loadedMedias.length;
 
-            state.loadedMedias = state.loadedMedias.concat(mediaToAdd);
+            state.loadedMedias = mediaToAdd.concat(state.loadedMedias);
 
             // Add IDs and index to loadedMediaID (hashset)
             for (let i = 0; i < mediaToAdd.length; i++) {

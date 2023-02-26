@@ -14,7 +14,7 @@ export const LoginUser = async (email: string, password: string): Promise<string
 
     const errorVal = giveErrorFromStatusCode(response.status);
 
-    if (errorVal !== null) {
+    if (errorVal != null) {
         handleKnownError(errorVal);
         throw new Error(errorVal);
     }
